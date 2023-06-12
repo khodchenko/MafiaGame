@@ -1,7 +1,7 @@
 package com.khodchenko.mafia.data
 
 class VoteHelper(
-    var players: MutableList<Player>
+    var alivePlayers: MutableList<Player>
 ) {
     var candidates: MutableList<Player> = mutableListOf()
     var candidateWithVotes : MutableMap<Player, MutableList<Player>> = mutableMapOf()
@@ -18,7 +18,7 @@ class VoteHelper(
         this.candidateWithVotes.put(candidate, votes)
     }
 
-    fun calculateVotes(candidatesAndVotes: MutableMap<Player, MutableList<Player>>): MutableMap<Player, MutableList<Player>> {
+    fun calculateVotes(candidatesAndVotes: MutableMap<Player, MutableList<Player>> = this.candidateWithVotes): MutableMap<Player, MutableList<Player>> {
         val maxVotes = candidatesAndVotes.values.map { it.size }.maxOrNull()
         return candidatesAndVotes.filterValues { it.size == maxVotes }.toMutableMap()
     }

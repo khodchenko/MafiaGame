@@ -12,7 +12,11 @@ interface TimerListener {
     fun onTimerFinished()
 }
 
-class Timer(private val duration: Long, private val listener: TimerListener) {
+class Timer(
+    private val duration: Long,
+    private val listener: TimerListener
+) {
+
     private val remainingTimeFlow = MutableStateFlow(duration)
     private var timerJob: Job? = null
 
