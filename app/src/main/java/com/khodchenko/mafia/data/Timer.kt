@@ -13,7 +13,7 @@ interface TimerListener {
 }
 
 class Timer(
-    private val duration: Long,
+    val duration: Long,
     private val listener: TimerListener
 ) {
 

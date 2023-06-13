@@ -37,9 +37,6 @@ class Game(
             mafiaMeeting()
             return
         } else {
-            //    makeShoot(getAllBlackPlayers(alivePlayers), targets = setTargets())
-            //  makeCheck(Player, target)
-            // makeCheck(Player, target)
             currentStage = Stage.LAST_WORD
             Log.d(TAG, "$currentStage")
         }

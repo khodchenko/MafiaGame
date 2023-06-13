@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.TimerFragment">
+
+    <TextView
+        android:id="@+id/tv_current_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="CURRENT_PLAYER"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_speech_header" />
+
+    <TextView
+        android:id="@+id/tv_speech_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="speech_header"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_vote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="make_vote"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
+
+    <ImageView
+        android:id="@+id/im_play"
+        android:layout_width="66dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:src="@drawable/ic_play"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/im_next_player"
+        app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
+
+    <ImageView
+        android:id="@+id/im_next_player"
+        android:layout_width="63dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:src="@drawable/ic_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
+
+    <ImageView
+        android:id="@+id/im_stop"
+        android:layout_width="64dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_stop"
+        app:layout_constraintEnd_toStartOf="@+id/im_play"
+        app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/im_play" />
+
+    <TextView
+        android:id="@+id/tv_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="timer"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_current_player" />
+
+    <ImageView
+        android:id="@+id/im_penalty_counter"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="2dp"
+        android:src="@drawable/ic_penalty"
+        app:layout_constraintStart_toEndOf="@+id/tv_current_player"
+        app:layout_constraintTop_toTopOf="@+id/tv_current_player" />
+
+    <TextView
+        android:id="@+id/tv_penalty_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="0"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/im_penalty_counter"
+        app:layout_constraintStart_toEndOf="@+id/im_penalty_counter"
+        app:layout_constraintTop_toTopOf="@+id/im_penalty_counter" />
+
+    <ImageView
+        android:id="@+id/im_pause"
+        android:layout_width="65dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_pause"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/im_play"
+        app:layout_constraintEnd_toEndOf="@+id/im_play"
+        app:layout_constraintStart_toStartOf="@+id/im_play"
+        app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
