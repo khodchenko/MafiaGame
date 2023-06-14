@@ -3,10 +3,21 @@ package com.khodchenko.mafia.data
 import android.content.ContentValues.TAG
 import android.util.Log
 
-class Game(
-    playerNames: MutableList<Player>,
-    numberOfPlayers: Int = 10
-) : TimerListener {
+class Game: TimerListener {
+
+    private constructor()
+    companion object {
+        @Volatile
+        private var instance: Game? = null
+
+        // Метод для получения экземпляра класса
+        fun getInstance(): Game {
+            return instance ?: synchronized(this) {
+                instance ?: Game().also { instance = it }
+            }
+        }
+    }
+
     private var inGame: Boolean = true
     private var playerList: MutableList<Player> = mutableListOf()
     private var day: Int = 0
@@ -103,10 +114,14 @@ class Game(
         }
     }
 
+    fun addPlayers(playerNames: ArrayList<String>) {
+        for (player in playerNames) {
+            playerList.add(Player(player, playerList.lastIndex))
+        }
+    }
 
     private fun shufflePlayerRoles(
-        playerList: List<Player>,
-        numberOfPlayers: Int
+        playerList: List<Player>
     ): MutableList<Player> {
         val roles = mutableListOf<Player.Role>().apply {
             repeat(6) { add(Player.Role.CIVIL) }
@@ -130,6 +145,10 @@ class Game(
 
     private fun clearPlayers() {
         playerList = mutableListOf()
+    }
+
+    fun getAllPlayers(): MutableList<Player> {
+        return playerList
     }
 
     private fun getAllRedPlayers(alivePlayers: MutableList<Player>): MutableList<Player> {
