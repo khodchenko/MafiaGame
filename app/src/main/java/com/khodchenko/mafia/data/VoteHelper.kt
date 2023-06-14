@@ -14,6 +14,9 @@ class VoteHelper(
         candidates.remove(player)
     }
 
+    fun removeAllCandidates(){
+        candidates = mutableListOf()
+    }
     fun voteForCandidate(candidate: Player, votes: MutableList<Player>) {
         this.candidateWithVotes.put(candidate, votes)
     }

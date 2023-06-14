@@ -45,11 +45,11 @@
         android:layout_marginEnd="32dp"
         android:src="@drawable/ic_play"
         android:visibility="visible"
-        app:layout_constraintEnd_toStartOf="@+id/im_next_player"
+        app:layout_constraintEnd_toStartOf="@+id/im_next"
         app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
 
     <ImageView
-        android:id="@+id/im_next_player"
+        android:id="@+id/im_next"
         android:layout_width="63dp"
         android:layout_height="51dp"
         android:layout_marginTop="8dp"

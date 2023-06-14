@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.khodchenko.mafia.R
 import com.khodchenko.mafia.data.Game
+import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentConfigureGameBinding
 import com.khodchenko.mafia.databinding.ItemPlayerBinding
 
@@ -19,7 +20,6 @@ class ConfigureGameFragment : Fragment() {
 
     private val nameOfPlayers: ArrayList<String> = arrayListOf()
     private var numberOfPlayers: Int = 0
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,18 +54,17 @@ class ConfigureGameFragment : Fragment() {
                 Game.getInstance().addPlayers(playerNames = nameOfPlayers)
                 findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
             }
-
         }
     }
 
     private fun addPlayer() {
-        val playerName = binding.etPlayerName.text.toString().trim()
+        val playerName = binding.setPlayerName.text.toString().trim()
         if (playerName.isNotEmpty()) {
             if (numberOfPlayers < 10) {
                 nameOfPlayers.add(playerName)
                 numberOfPlayers++
                 createPlayerItem(playerName)
-                binding.etPlayerName.text.clear()
+                binding.setPlayerName.text.clear()
             } else {
                 Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT)
                     .show()
@@ -84,7 +83,9 @@ class ConfigureGameFragment : Fragment() {
     private fun createPlayerItem(playerName: String) {
         val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
         playerBinding.tvPlayerName.text = "$numberOfPlayers. $playerName"
+
         val itemPlayerView = playerBinding.root
+        playerBinding.cardView.setPadding(0, 8, 0, 8)
         binding.layoutPlayerList.addView(itemPlayerView)
     }
 

@@ -1,3 +1,5 @@
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -6,10 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.R
+import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.databinding.FragmentTimerBinding
+import java.util.Collections
 
 private const val TOTAL_TIME = 60000L
 private const val INTERVAL = 1000L
+
 class TimerFragment : Fragment() {
     private var _binding: FragmentTimerBinding? = null
     private val binding get() = _binding!!
@@ -17,7 +22,7 @@ class TimerFragment : Fragment() {
     private lateinit var countDownTimer: CountDownTimer
     private var isTimerRunning = false
     private var remainingTime: Long = 0
-
+    private var mediaPlayer: MediaPlayer? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,6 +30,13 @@ class TimerFragment : Fragment() {
     ): View {
         _binding = FragmentTimerBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        updateHeaderText()
+
+
+        binding.imNext.setOnClickListener {
+            nextButtonClick()
+        }
 
         with(binding) {
             progressBar.max = TOTAL_TIME.toInt()
@@ -48,8 +60,14 @@ class TimerFragment : Fragment() {
                 togglePlayPauseButtons()
             }
         }
-
+        initMediaPlayer()
         return root
+    }
+
+    private fun updateHeaderText() {
+        binding.tvCurrentPlayer.text = Game.getInstance().getCurrentPlayer().name
+        binding.tvSpeechHeader.text =
+            "${Game.getInstance().getCurrentStage()} № ${Game.getInstance().getCurrentDay()}"
     }
 
     private fun startTimer() {
@@ -58,6 +76,16 @@ class TimerFragment : Fragment() {
                 remainingTime = millisUntilFinished
                 updateTimerText()
                 updateProgressBar()
+                remainingTime = millisUntilFinished
+                updateTimerText()
+                updateProgressBar()
+
+                val secondsRemaining = millisUntilFinished / 1000
+                if (secondsRemaining == 10L) {
+                    playSound(R.raw.timer_sound_10sec_r)
+                } else if (secondsRemaining == 5L) {
+
+                }
             }
 
             override fun onFinish() {
@@ -85,6 +113,7 @@ class TimerFragment : Fragment() {
         binding.progressBar.progress = 0
         isTimerRunning = false
     }
+
     private fun updateTimerText() {
         val minutes = remainingTime / 1000 / 60
         val seconds = (remainingTime / 1000) % 60
@@ -108,7 +137,59 @@ class TimerFragment : Fragment() {
     }
 
     private fun onTimerFinished() {
-      Snackbar.make(requireContext(),requireView(), "Время вышло!", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(requireContext(), requireView(), "Время вышло!", Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun nextButtonClick() {
+        val game = Game.getInstance()
+
+
+        when (game.getCurrentStage()) {
+            Game.Stage.NIGHT -> game.setCurrentStage(Game.Stage.LAST_WORD)
+            Game.Stage.LAST_WORD -> game.setCurrentStage(Game.Stage.DAY)
+            Game.Stage.DAY -> {
+
+                val currentPlayer = game.getCurrentPlayer()
+
+                val lastPlayerOfQueueList = game.getSpeechPlayerOrder().last()
+
+                    if (currentPlayer != lastPlayerOfQueueList) {
+
+                        game.setCurrentPlayer(game.nextPlayerSpeech())
+                    } else {
+                        game.setCurrentStage(Game.Stage.VOTING)
+                    }
+
+            }
+
+            Game.Stage.VOTING -> {
+                game.setCurrentStage(Game.Stage.NIGHT)
+                game.nextDay()
+                game.setSpeechPlayerOrder()
+            }
+        }
+
+        updateHeaderText()
+        updateTimerText()
+        togglePlayPauseButtons()
+    }
+
+
+    private fun initMediaPlayer() {
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timer_sound_10sec_r)
+    }
+
+    private fun playSound(soundResId: Int) {
+        mediaPlayer?.apply {
+            stop()
+            reset()
+            setDataSource(
+                requireContext(),
+                Uri.parse("android.resource://${requireContext().packageName}/$soundResId")
+            )
+            prepare()
+            start()
+        }
     }
 
     override fun onDestroyView() {

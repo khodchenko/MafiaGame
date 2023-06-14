@@ -32,6 +32,7 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        Game.getInstance().startGame()
         containerTimerFragment = binding.containerFragmentTimer
         containerPlayerListFragment = binding.containerFragmentPlayer
         childFragmentManager.beginTransaction()
