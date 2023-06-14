@@ -8,15 +8,16 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import com.khodchenko.mafia.databinding.FragmentHomeBinding
-
+import com.khodchenko.mafia.ui.PlayerListFragment
 
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private lateinit var containerFragment: FrameLayout
-
     private val binding get() = _binding!!
+    private lateinit var containerTimerFragment: FrameLayout
+    private lateinit var containerPlayerListFragment: FrameLayout
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,10 +26,13 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        containerFragment = binding.containerFragmentTimer
+        containerTimerFragment = binding.containerFragmentTimer
+        containerPlayerListFragment = binding.containerFragmentPlayer
         val timerFragment = TimerFragment()
+        val playerListFragment = PlayerListFragment()
         childFragmentManager.beginTransaction()
-            .add(containerFragment.id, timerFragment)
+            .add(containerTimerFragment.id, timerFragment)
+            .add(containerPlayerListFragment.id, playerListFragment)
             .commit()
 
         return root
