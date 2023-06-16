@@ -44,8 +44,8 @@ class Game : TimerListener {
 
     fun setSpeechPlayerOrder() {
         val previousFirstPlayer = speechPlayerOrder[0]
-        this.speechPlayerOrder.removeAt(0)
-        this.speechPlayerOrder.add(previousFirstPlayer)
+        speechPlayerOrder.removeAt(0)
+        speechPlayerOrder.add(previousFirstPlayer)
         currentPlayer = speechPlayerOrder[0]
     }
 
@@ -179,9 +179,6 @@ class Game : TimerListener {
     }
 
     fun nextDay() {
-        day ++
+        day++
     }
-
-
-
 }

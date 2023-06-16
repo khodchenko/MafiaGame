@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import com.khodchenko.mafia.data.Game
+import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentHomeBinding
 import com.khodchenko.mafia.ui.PlayerListFragment
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(),  PlayerListFragment.OnPlayerChangeListener {
+
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -35,6 +37,7 @@ class HomeFragment : Fragment() {
         Game.getInstance().startGame()
         containerTimerFragment = binding.containerFragmentTimer
         containerPlayerListFragment = binding.containerFragmentPlayer
+        playerListFragment.setOnPlayerChangeListener(this)
         childFragmentManager.beginTransaction()
             .add(containerTimerFragment.id, timerFragment)
             .add(containerPlayerListFragment.id, playerListFragment)
@@ -47,4 +50,9 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onPlayerChanged(player: Player) {
+        playerListFragment.onPlayerChanged(player)
+    }
+
 }

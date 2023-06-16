@@ -6,16 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.R
 import com.khodchenko.mafia.data.Game
+import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentTimerBinding
-import java.util.Collections
+import com.khodchenko.mafia.ui.PlayerListFragment
+import com.khodchenko.mafia.ui.home.HomeFragment
 
 private const val TOTAL_TIME = 60000L
+private const val HALF_TIME = 60000L
 private const val INTERVAL = 1000L
 
 class TimerFragment : Fragment() {
+
     private var _binding: FragmentTimerBinding? = null
     private val binding get() = _binding!!
 
@@ -32,7 +37,6 @@ class TimerFragment : Fragment() {
         val root: View = binding.root
 
         updateHeaderText()
-
 
         binding.imNext.setOnClickListener {
             nextButtonClick()
@@ -63,7 +67,10 @@ class TimerFragment : Fragment() {
         initMediaPlayer()
         return root
     }
-
+    private fun notifyPlayerChange(player: Player) {
+        val homeFragment = requireParentFragment() as? HomeFragment
+        homeFragment?.onPlayerChanged(player)
+    }
     private fun updateHeaderText() {
         binding.tvCurrentPlayer.text = Game.getInstance().getCurrentPlayer().name
         binding.tvSpeechHeader.text =
@@ -143,9 +150,11 @@ class TimerFragment : Fragment() {
     private fun nextButtonClick() {
         val game = Game.getInstance()
 
-
         when (game.getCurrentStage()) {
-            Game.Stage.NIGHT -> game.setCurrentStage(Game.Stage.LAST_WORD)
+            Game.Stage.NIGHT -> {
+                game.setCurrentStage(Game.Stage.LAST_WORD)
+                //notifyStageChange(Game.Stage.LAST_WORD)
+            }
             Game.Stage.LAST_WORD -> game.setCurrentStage(Game.Stage.DAY)
             Game.Stage.DAY -> {
 
@@ -153,9 +162,9 @@ class TimerFragment : Fragment() {
 
                 val lastPlayerOfQueueList = game.getSpeechPlayerOrder().last()
 
-                    if (currentPlayer != lastPlayerOfQueueList) {
-
+                if (currentPlayer != lastPlayerOfQueueList) {
                         game.setCurrentPlayer(game.nextPlayerSpeech())
+                        notifyPlayerChange(game.getCurrentPlayer())
                     } else {
                         game.setCurrentStage(Game.Stage.VOTING)
                     }
@@ -168,12 +177,10 @@ class TimerFragment : Fragment() {
                 game.setSpeechPlayerOrder()
             }
         }
-
         updateHeaderText()
         updateTimerText()
         togglePlayPauseButtons()
     }
-
 
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timer_sound_10sec_r)

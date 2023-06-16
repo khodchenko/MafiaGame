@@ -1,23 +1,30 @@
 package com.khodchenko.mafia.ui
 
-import android.annotation.SuppressLint
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
-import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentPlayerListBinding
 import com.khodchenko.mafia.databinding.ItemPlayerBinding
 
-public class PlayerListFragment : Fragment() {
+class PlayerListFragment : Fragment() {
 
+    interface OnPlayerChangeListener {
+        fun onPlayerChanged(player: Player)
+    }
+
+    private var playerChangeListener: OnPlayerChangeListener? = null
     private var _binding: FragmentPlayerListBinding? = null
     private val binding get() = _binding!!
-    private var playerList : MutableList<Player> = mutableListOf()
-
+    private lateinit var playerAdapter: PlayerAdapter
+    private var playerList: MutableList<Player> = mutableListOf()
+    private var currentPlayer: Player? = null
 
     val roleSmile: Map<Player.Role, String> = hashMapOf(
         Player.Role.CIVIL to "\uD83D\uDE42",
@@ -25,7 +32,11 @@ public class PlayerListFragment : Fragment() {
         Player.Role.DON to "\uD83C\uDFA9",
         Player.Role.SHERIFF to "\uD83E\uDD20"
     )
-    @SuppressLint("SuspiciousIndentation")
+
+    fun setOnPlayerChangeListener(listener: OnPlayerChangeListener) {
+        playerChangeListener = listener
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,29 +45,22 @@ public class PlayerListFragment : Fragment() {
         _binding = FragmentPlayerListBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-          setupPlayerList()
+        setupRecyclerView()
 
         return root
     }
 
-    private fun setupPlayerList() {
-        val layoutInflater = LayoutInflater.from(requireContext())
-        val parentLayout = binding.layoutPlayerList
+    fun onPlayerChanged(player: Player) {
+        currentPlayer = player
+        playerAdapter.notifyDataSetChanged()
+    }
+
+    private fun setupRecyclerView() {
         playerList = Game.getInstance().getAllPlayers()
-        for (player in playerList) {
-            val itemBinding = ItemPlayerBinding.inflate(layoutInflater, parentLayout, false)
-            itemBinding.tvPlayerNumber.text = player.number.toString()
-            itemBinding.tvPlayerName.text = player.name
-            itemBinding.tvRole.text = roleSmile.get(player.role)
-            itemBinding.tvPenalty.text = player.penalty.toString()
-
-
-            itemBinding.root.setOnLongClickListener {
-
-                true
-            }
-
-            parentLayout.addView(itemBinding.root)
+        playerAdapter = PlayerAdapter(playerList)
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = playerAdapter
         }
     }
 
@@ -65,6 +69,40 @@ public class PlayerListFragment : Fragment() {
         _binding = null
     }
 
+    inner class PlayerAdapter(private val players: List<Player>) :
+        RecyclerView.Adapter<PlayerAdapter.ViewHolder>() {
+
+        inner class ViewHolder(private val binding: ItemPlayerBinding) :
+            RecyclerView.ViewHolder(binding.root) {
+
+            fun bind(player: Player) {
+                binding.tvPlayerNumber.text = player.number.toString()
+                binding.tvPlayerName.text = player.name
+                binding.tvRole.text = roleSmile[player.role]
+                binding.tvPenalty.text = player.penalty.toString()
+
+                itemView.setOnClickListener {
+                    playerChangeListener?.onPlayerChanged(player)
+                }
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding = ItemPlayerBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            return ViewHolder(binding)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val player = players[position]
+            holder.bind(player)
+        }
+
+        override fun getItemCount(): Int {
+            return players.size
+        }
+    }
 }
-
-
