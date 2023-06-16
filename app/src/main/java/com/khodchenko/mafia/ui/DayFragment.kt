@@ -13,7 +13,7 @@ import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentPlayerListBinding
 import com.khodchenko.mafia.databinding.ItemPlayerBinding
 
-class PlayerListFragment : Fragment() {
+class DayFragment : Fragment() {
 
     interface OnPlayerChangeListener {
         fun onPlayerChanged(player: Player)
@@ -52,7 +52,7 @@ class PlayerListFragment : Fragment() {
 
     fun onPlayerChanged(player: Player) {
         currentPlayer = player
-        playerAdapter.notifyDataSetChanged()
+      //  playerAdapter.notifyDataSetChanged()
     }
 
     private fun setupRecyclerView() {

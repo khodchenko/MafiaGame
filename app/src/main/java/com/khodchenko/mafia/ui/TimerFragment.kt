@@ -6,13 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.R
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentTimerBinding
-import com.khodchenko.mafia.ui.PlayerListFragment
 import com.khodchenko.mafia.ui.home.HomeFragment
 
 private const val TOTAL_TIME = 60000L

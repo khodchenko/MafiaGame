@@ -6,6 +6,9 @@ import android.util.Log
 class Game : TimerListener {
 
     private constructor()
+    interface GameObserver {
+        fun onStageChanged(newStage: Game.Stage)
+    }
 
     companion object {
         @Volatile
@@ -25,6 +28,7 @@ class Game : TimerListener {
     private lateinit var currentPlayer: Player
     private var currentStage = Stage.NIGHT
     private var speechPlayerOrder: MutableList<Player> = mutableListOf()
+    private val observers: MutableList<GameObserver> = mutableListOf()
 
     enum class Stage {
         NIGHT,
@@ -36,6 +40,28 @@ class Game : TimerListener {
     fun startGame() {
         currentPlayer = playerList[0]
         speechPlayerOrder = getAlivePlayers(getAllPlayers())
+    }
+    fun addObserver(observer: GameObserver) {
+        observers.add(observer)
+    }
+
+    fun removeObserver(observer: GameObserver) {
+        observers.remove(observer)
+    }
+
+    private fun notifyStageChanged(newStage: Stage) {
+        for (observer in observers) {
+            observer.onStageChanged(newStage)
+        }
+    }
+
+    fun getCurrentStage(): Stage {
+        return currentStage
+    }
+
+    fun setCurrentStage(stage: Stage) {
+        currentStage = stage
+        notifyStageChanged(stage)
     }
 
     fun nextPlayerSpeech(): Player {
@@ -160,14 +186,6 @@ class Game : TimerListener {
 
     fun getDeadPlayers(playerList: MutableList<Player>): MutableList<Player> {
         return playerList.filter { !it.isAlive } as MutableList<Player>
-    }
-
-    fun getCurrentStage(): Stage {
-        return currentStage
-    }
-
-    fun setCurrentStage(stage: Stage) {
-        currentStage = stage
     }
 
     fun setCurrentPlayer(toPlayer: Player) {

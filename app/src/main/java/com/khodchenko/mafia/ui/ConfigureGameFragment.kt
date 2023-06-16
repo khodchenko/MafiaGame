@@ -1,5 +1,6 @@
 package com.khodchenko.mafia.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -111,7 +112,6 @@ class ConfigureGameFragment : Fragment() {
                 id: Long
             ) {
                 val selectedRole = adapter.getItem(position)
-                // Здесь вы можете выполнить действия в зависимости от выбранной роли
                 Toast.makeText(context, "Выбрана роль: $selectedRole", Toast.LENGTH_SHORT).show()
             }
 

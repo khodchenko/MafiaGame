@@ -10,10 +10,13 @@ import androidx.fragment.app.Fragment
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentHomeBinding
-import com.khodchenko.mafia.ui.PlayerListFragment
+import com.khodchenko.mafia.ui.DayFragment
+import com.khodchenko.mafia.ui.LastWordFragment
+import com.khodchenko.mafia.ui.NightFragment
+import com.khodchenko.mafia.ui.VotingFragment
 
 
-class HomeFragment : Fragment(),  PlayerListFragment.OnPlayerChangeListener {
+class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameObserver {
 
 
     private var _binding: FragmentHomeBinding? = null
@@ -21,7 +24,8 @@ class HomeFragment : Fragment(),  PlayerListFragment.OnPlayerChangeListener {
     private lateinit var containerTimerFragment: FrameLayout
     private lateinit var containerPlayerListFragment: FrameLayout
     private val timerFragment = TimerFragment()
-    private val playerListFragment = PlayerListFragment()
+    private val dayFragment = DayFragment()
+    private lateinit var currentFragment: Fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -35,24 +39,74 @@ class HomeFragment : Fragment(),  PlayerListFragment.OnPlayerChangeListener {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
         Game.getInstance().startGame()
+        Game.getInstance().addObserver(this)
         containerTimerFragment = binding.containerFragmentTimer
         containerPlayerListFragment = binding.containerFragmentPlayer
-        playerListFragment.setOnPlayerChangeListener(this)
+
+        currentFragment = NightFragment()
+
+        dayFragment.setOnPlayerChangeListener(this)
         childFragmentManager.beginTransaction()
             .add(containerTimerFragment.id, timerFragment)
-            .add(containerPlayerListFragment.id, playerListFragment)
+            .add(containerPlayerListFragment.id, currentFragment)
             .commit()
 
         return root
     }
+    override fun onStageChanged(newStage: Game.Stage) {
+        // Обновить UI в соответствии с новой стадией
+        when (newStage) {
+            Game.Stage.NIGHT -> {
+                // Показать фрагмент для стадии NIGHT
+                showNightFragment()
+            }
+            Game.Stage.LAST_WORD -> {
+                // Показать фрагмент для стадии LAST_WORD
+                showLastWordFragment()
+            }
+            Game.Stage.DAY -> {
+                // Показать фрагмент для стадии DAY
+                showDayFragment()
+            }
+            Game.Stage.VOTING -> {
+                // Показать фрагмент для стадии VOTING
+                showVotingFragment()
+            }
+        }
+    }
+
+    private fun showNightFragment() {
+        childFragmentManager.beginTransaction()
+            .replace(containerPlayerListFragment.id, NightFragment())
+            .commit()
+    }
+
+    private fun showLastWordFragment() {
+        childFragmentManager.beginTransaction()
+            .replace(containerPlayerListFragment.id, LastWordFragment())
+            .commit()
+    }
+
+    private fun showDayFragment() {
+        childFragmentManager.beginTransaction()
+            .replace(containerPlayerListFragment.id, DayFragment())
+            .commit()
+    }
+
+    private fun showVotingFragment() {
+        childFragmentManager.beginTransaction()
+            .replace(containerPlayerListFragment.id, VotingFragment())
+            .commit()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Game.getInstance().removeObserver(this)
         _binding = null
     }
 
     override fun onPlayerChanged(player: Player) {
-        playerListFragment.onPlayerChanged(player)
+        dayFragment.onPlayerChanged(player)
     }
 
 }
