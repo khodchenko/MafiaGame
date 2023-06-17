@@ -18,7 +18,6 @@ import com.khodchenko.mafia.ui.VotingFragment
 
 class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameObserver {
 
-
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var containerTimerFragment: FrameLayout
@@ -53,23 +52,20 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
 
         return root
     }
+
     override fun onStageChanged(newStage: Game.Stage) {
         // Обновить UI в соответствии с новой стадией
         when (newStage) {
             Game.Stage.NIGHT -> {
-                // Показать фрагмент для стадии NIGHT
                 showNightFragment()
             }
             Game.Stage.LAST_WORD -> {
-                // Показать фрагмент для стадии LAST_WORD
                 showLastWordFragment()
             }
             Game.Stage.DAY -> {
-                // Показать фрагмент для стадии DAY
                 showDayFragment()
             }
             Game.Stage.VOTING -> {
-                // Показать фрагмент для стадии VOTING
                 showVotingFragment()
             }
         }

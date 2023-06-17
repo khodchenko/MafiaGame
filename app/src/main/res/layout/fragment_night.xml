@@ -1,14 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.NightFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/tv_player_role1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="mafia_player"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tv_player_role3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="mafia_player"
+        app:layout_constraintEnd_toEndOf="@+id/tv_player_role2"
+        app:layout_constraintStart_toStartOf="@+id/tv_player_role2"
+        app:layout_constraintTop_toBottomOf="@+id/tv_player_role2" />
+
+    <TextView
+        android:id="@+id/tv_player_role2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="mafia_player"
+        app:layout_constraintStart_toStartOf="@+id/tv_player_role1"
+        app:layout_constraintTop_toBottomOf="@+id/tv_player_role1" />
+
+    <Spinner
+        android:id="@+id/spinner_target1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_player_role1"
+        app:layout_constraintStart_toEndOf="@+id/tv_player_role1"
+        app:layout_constraintTop_toTopOf="@+id/tv_player_role1" />
+
+    <Spinner
+        android:id="@+id/spinner_target2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_player_role2"
+        app:layout_constraintStart_toEndOf="@+id/tv_player_role2"
+        app:layout_constraintTop_toTopOf="@+id/tv_player_role2" />
+
+    <Spinner
+        android:id="@+id/spinner_target3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_player_role3"
+        app:layout_constraintStart_toEndOf="@+id/tv_player_role3"
+        app:layout_constraintTop_toTopOf="@+id/tv_player_role3" />
+
+    <Button
+        android:id="@+id/button_shoot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="BANG!"
+        app:layout_constraintBottom_toBottomOf="@+id/spinner_target2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_target2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,60 +1,79 @@
 package com.khodchenko.mafia.ui
 
+import android.R
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.khodchenko.mafia.R
+import android.widget.ArrayAdapter
+import com.khodchenko.mafia.data.Game
+import com.khodchenko.mafia.data.Player
+import com.khodchenko.mafia.databinding.FragmentNightBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [NightFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class NightFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentNightBinding? = null
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentNightBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
+        return root
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val blackPlayers = Game.getInstance().getAllBlackPlayers()
+        if (blackPlayers.isNotEmpty()) {
+            val tvPlayerRole1 = binding.tvPlayerRole1
+            if (blackPlayers[0].isAlive) {
+                tvPlayerRole1.text = blackPlayers[0].name
+            }
+
+            val tvPlayerRole2 = binding.tvPlayerRole2
+            if (blackPlayers.size > 1 && blackPlayers[1].isAlive) {
+                tvPlayerRole2.text = blackPlayers[1].name
+            }
+
+            val tvPlayerRole3 = binding.tvPlayerRole3
+            if (blackPlayers.size > 2 && blackPlayers[2].isAlive) {
+                tvPlayerRole3.text = blackPlayers[2].name
+            }
+        }
+
+        val spinnerTarget1 = binding.spinnerTarget1
+        val spinnerTarget2 = binding.spinnerTarget2
+        val spinnerTarget3 = binding.spinnerTarget3
+        // Populate spinners with player names
+        val playerList = getPlayerList()
+        val playerNames = playerList.map { it.name }
+        val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, playerNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerTarget1.adapter = adapter
+        spinnerTarget2.adapter = adapter
+        spinnerTarget3.adapter = adapter
+
+        binding.buttonShoot.setOnClickListener {
+            val targets : MutableList<Player> = mutableListOf()
+            targets.add(spinnerTarget1.selectedItem as Player)
+            targets.add(spinnerTarget2.selectedItem as Player)
+            targets.add(spinnerTarget3.selectedItem as Player)
+            Game.getInstance().makeShoot(targets)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_night, container, false)
+    fun getPlayerList()  : MutableList<Player> {
+       return Game.getInstance().getAllPlayers()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NightFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NightFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

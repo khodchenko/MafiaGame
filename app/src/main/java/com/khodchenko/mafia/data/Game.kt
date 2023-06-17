@@ -2,8 +2,9 @@ package com.khodchenko.mafia.data
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import android.widget.Toast
 
-class Game : TimerListener {
+class Game  {
 
     private constructor()
     interface GameObserver {
@@ -54,7 +55,6 @@ class Game : TimerListener {
             observer.onStageChanged(newStage)
         }
     }
-
     fun getCurrentStage(): Stage {
         return currentStage
     }
@@ -83,10 +83,18 @@ class Game : TimerListener {
         return player.role as Player.Role
     }
 
-    private fun makeShoot(mafiaPlayers: MutableList<Player>, targets: MutableList<Player>) {
-        Log.d(TAG, "makeShoot $mafiaPlayers: $targets")
-    }
+    fun makeShoot(targets: MutableList<Player>) {
+        val distinctTargets = targets.distinct()
+        val areTargetsEqual = distinctTargets.size == 1
+        if (areTargetsEqual) {
+            val target = distinctTargets[0]
+            if (target.isAlive) {
+                target.isAlive = false
+            }
+        } else {
 
+        }
+    }
 
     private fun kickPlayers(voteResult: MutableMap<Player, MutableList<Player>>) {
         for (player in voteResult.keys) {
@@ -96,14 +104,9 @@ class Game : TimerListener {
 
     }
 
-    override fun onTimerFinished() {
-        Log.d(TAG, "onTimerFinished: $currentPlayer finished!")
-
-    }
-
     private fun checkGameEnd(alivePlayers: MutableList<Player>) {
-        val redPlayers = getAllRedPlayers(alivePlayers)
-        val blackPlayers = getAllBlackPlayers(alivePlayers)
+        val redPlayers = getAllRedPlayers()
+        val blackPlayers = getAllBlackPlayers()
 
         if (blackPlayers.size == redPlayers.size) {
             inGame = false
@@ -154,22 +157,16 @@ class Game : TimerListener {
         return currentPlayer
     }
 
-    fun getAllRedPlayers(alivePlayers: MutableList<Player>): MutableList<Player> {
-        return alivePlayers.filter {
-            it.role in listOf(
-                Player.Role.CIVIL,
-                Player.Role.SHERIFF
-            )
-        } as MutableList<Player>
+    fun getAllRedPlayers(): MutableList<Player> {
+        return getAlivePlayers(playerList).filter {
+            it.role in listOf(Player.Role.CIVIL, Player.Role.SHERIFF)
+        }.toMutableList()
     }
 
-    fun getAllBlackPlayers(alivePlayers: MutableList<Player>): MutableList<Player> {
-        return alivePlayers.filter {
-            it.role in listOf(
-                Player.Role.MAFIA,
-                Player.Role.DON
-            )
-        } as MutableList<Player>
+    fun getAllBlackPlayers(): MutableList<Player> {
+        return getAlivePlayers(playerList).filter {
+            it.role in listOf(Player.Role.MAFIA, Player.Role.DON)
+        }.toMutableList()
     }
 
     private fun getDonOrNull(allPlayers: MutableList<Player>): Player? {

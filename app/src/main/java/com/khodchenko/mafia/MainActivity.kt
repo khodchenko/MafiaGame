@@ -1,6 +1,5 @@
 package com.khodchenko.mafia
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -13,7 +12,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.khodchenko.mafia.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
