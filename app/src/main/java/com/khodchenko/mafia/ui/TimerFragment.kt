@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.R
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
+import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentTimerBinding
 import com.khodchenko.mafia.ui.home.HomeFragment
 
@@ -147,38 +148,56 @@ class TimerFragment : Fragment() {
 
     private fun nextButtonClick() {
         val game = Game.getInstance()
+        var lastWordFromVoting = false
 
         when (game.getCurrentStage()) {
             Game.Stage.NIGHT -> {
-                game.setCurrentStage(Game.Stage.LAST_WORD)
-                //notifyStageChange(Game.Stage.LAST_WORD)
+                if (game.getKickedPlayers()?.isNotEmpty() == true) {
+                    game.setCurrentStage(Game.Stage.LAST_WORD)
+                } else {
+                    game.setCurrentStage(Game.Stage.DAY)
+                }
             }
-            Game.Stage.LAST_WORD -> game.setCurrentStage(Game.Stage.DAY)
+
             Game.Stage.DAY -> {
-
                 val currentPlayer = game.getCurrentPlayer()
-
                 val lastPlayerOfQueueList = game.getSpeechPlayerOrder().last()
 
                 if (currentPlayer != lastPlayerOfQueueList) {
-                        game.setCurrentPlayer(game.nextPlayerSpeech())
-                        notifyPlayerChange(game.getCurrentPlayer())
-                    } else {
-                        game.setCurrentStage(Game.Stage.VOTING)
-                    }
-
+                    game.setCurrentPlayer(game.nextPlayerSpeech())
+                    notifyPlayerChange(game.getCurrentPlayer())
+                } else {
+                    game.setCurrentStage(Game.Stage.VOTING)
+                }
             }
 
             Game.Stage.VOTING -> {
-                game.setCurrentStage(Game.Stage.NIGHT)
-                game.nextDay()
-                game.setSpeechPlayerOrder()
+                val voteHelper: VoteHelper = VoteHelper()
+                if (voteHelper.candidates.isNotEmpty()) {
+                    lastWordFromVoting = true
+                    game.setCurrentStage(Game.Stage.LAST_WORD)
+                } else {
+                    game.setCurrentStage(Game.Stage.NIGHT)
+                }
+            }
+
+            Game.Stage.LAST_WORD -> {
+                if (lastWordFromVoting) {
+                    game.setCurrentStage(Game.Stage.NIGHT)
+                    lastWordFromVoting = false
+                    game.nextDay()
+                    game.setSpeechPlayerOrder()
+                } else {
+                    game.setCurrentStage(Game.Stage.DAY)
+                }
             }
         }
+
         updateHeaderText()
         updateTimerText()
         togglePlayPauseButtons()
     }
+
 
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timer_sound_10sec_r)

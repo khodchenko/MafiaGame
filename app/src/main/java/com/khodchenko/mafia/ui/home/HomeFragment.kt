@@ -1,6 +1,7 @@
 package com.khodchenko.mafia.ui.home
 
 import TimerFragment
+import VotingFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,6 @@ import com.khodchenko.mafia.databinding.FragmentHomeBinding
 import com.khodchenko.mafia.ui.DayFragment
 import com.khodchenko.mafia.ui.LastWordFragment
 import com.khodchenko.mafia.ui.NightFragment
-import com.khodchenko.mafia.ui.VotingFragment
 
 
 class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameObserver {

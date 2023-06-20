@@ -1,8 +1,9 @@
 package com.khodchenko.mafia.data
 
 class VoteHelper(
-    var alivePlayers: MutableList<Player>
+
 ) {
+    var alivePlayers: MutableList<Player> = Game.getInstance().getAlivePlayers()
     var candidates: MutableList<Player> = mutableListOf()
     var candidateWithVotes : MutableMap<Player, MutableList<Player>> = mutableMapOf()
 

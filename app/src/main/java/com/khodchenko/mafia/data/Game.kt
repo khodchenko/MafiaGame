@@ -1,14 +1,12 @@
 package com.khodchenko.mafia.data
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import android.widget.Toast
-
 class Game  {
 
     private constructor()
     interface GameObserver {
         fun onStageChanged(newStage: Game.Stage)
+
+        fun onPlayerChanged(player: Player)
     }
 
     companion object {
@@ -25,11 +23,11 @@ class Game  {
     private var inGame: Boolean = true
     private var playerList: MutableList<Player> = mutableListOf()
     private var day: Int = 0
-    private val voteHelper: VoteHelper = VoteHelper(playerList)
     private lateinit var currentPlayer: Player
     private var currentStage = Stage.NIGHT
     private var speechPlayerOrder: MutableList<Player> = mutableListOf()
     private val observers: MutableList<GameObserver> = mutableListOf()
+    private var kickedPlayers: MutableList<Player>? = null
 
     enum class Stage {
         NIGHT,
@@ -40,7 +38,7 @@ class Game  {
 
     fun startGame() {
         currentPlayer = playerList[0]
-        speechPlayerOrder = getAlivePlayers(getAllPlayers())
+        speechPlayerOrder = getAlivePlayers()
     }
     fun addObserver(observer: GameObserver) {
         observers.add(observer)
@@ -55,6 +53,13 @@ class Game  {
             observer.onStageChanged(newStage)
         }
     }
+
+    private fun notifyPlayerChanged(player: Player) {
+        for (observer in observers) {
+            observer.onPlayerChanged(player)
+        }
+    }
+
     fun getCurrentStage(): Stage {
         return currentStage
     }
@@ -89,7 +94,7 @@ class Game  {
         if (areTargetsEqual) {
             val target = distinctTargets[0]
             if (target.isAlive) {
-                target.isAlive = false
+                kickPlayers(mutableMapOf(target to mutableListOf()))
             }
         } else {
 
@@ -99,9 +104,12 @@ class Game  {
     private fun kickPlayers(voteResult: MutableMap<Player, MutableList<Player>>) {
         for (player in voteResult.keys) {
             player.isAlive = false
-            Log.d(TAG, "kickPlayers: player been kicked: $player")
         }
+        kickedPlayers = voteResult.keys.toMutableList()
+    }
 
+    fun getKickedPlayers(): MutableList<Player>? {
+        return kickedPlayers
     }
 
     private fun checkGameEnd(alivePlayers: MutableList<Player>) {
@@ -158,13 +166,13 @@ class Game  {
     }
 
     fun getAllRedPlayers(): MutableList<Player> {
-        return getAlivePlayers(playerList).filter {
+        return getAlivePlayers().filter {
             it.role in listOf(Player.Role.CIVIL, Player.Role.SHERIFF)
         }.toMutableList()
     }
 
     fun getAllBlackPlayers(): MutableList<Player> {
-        return getAlivePlayers(playerList).filter {
+        return getAlivePlayers().filter {
             it.role in listOf(Player.Role.MAFIA, Player.Role.DON)
         }.toMutableList()
     }
@@ -177,8 +185,8 @@ class Game  {
         return allPlayers.find { it.role == Player.Role.SHERIFF && it.isAlive }
     }
 
-    fun getAlivePlayers(playerList: MutableList<Player>): MutableList<Player> {
-        return playerList.filter { it.isAlive } as MutableList<Player>
+    fun getAlivePlayers(): MutableList<Player> {
+        return getAllPlayers().filter { it.isAlive } as MutableList<Player>
     }
 
     fun getDeadPlayers(playerList: MutableList<Player>): MutableList<Player> {
