@@ -28,24 +28,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button_vote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="make_vote"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
-
     <ImageView
         android:id="@+id/im_play"
         android:layout_width="66dp"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
         android:src="@drawable/ic_play"
         android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/im_next"
+        app:layout_constraintStart_toEndOf="@+id/im_stop"
         app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
 
     <ImageView
@@ -62,10 +53,10 @@
         android:id="@+id/im_stop"
         android:layout_width="64dp"
         android:layout_height="49dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
         android:src="@drawable/ic_stop"
-        app:layout_constraintEnd_toStartOf="@+id/im_play"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
 
     <ProgressBar
@@ -117,8 +108,8 @@
         android:src="@drawable/ic_pause"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/im_play"
-        app:layout_constraintEnd_toEndOf="@+id/im_play"
-        app:layout_constraintStart_toStartOf="@+id/im_play"
+        app:layout_constraintEnd_toStartOf="@+id/im_next"
+        app:layout_constraintStart_toEndOf="@+id/im_stop"
         app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

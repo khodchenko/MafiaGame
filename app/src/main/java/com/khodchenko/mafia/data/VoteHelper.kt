@@ -1,8 +1,19 @@
 package com.khodchenko.mafia.data
 
-class VoteHelper(
+class VoteHelper {
+    private constructor()
 
-) {
+    companion object {
+        @Volatile
+        private var instance: VoteHelper? = null
+
+        fun getInstance(): VoteHelper {
+            return instance ?: synchronized(this) {
+                instance ?: VoteHelper().also { instance = it }
+            }
+        }
+    }
+
     var alivePlayers: MutableList<Player> = Game.getInstance().getAlivePlayers()
     var candidates: MutableList<Player> = mutableListOf()
     var candidateWithVotes : MutableMap<Player, MutableList<Player>> = mutableMapOf()

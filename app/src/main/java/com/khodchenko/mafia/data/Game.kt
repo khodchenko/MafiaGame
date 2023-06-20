@@ -126,7 +126,7 @@ class Game  {
 
     fun addPlayers(playerNames: ArrayList<String>) {
         for (player in playerNames) {
-            playerList.add(Player(player, playerList.lastIndex))
+            playerList.add(Player(player, playerList.size+1))
         }
     }
 

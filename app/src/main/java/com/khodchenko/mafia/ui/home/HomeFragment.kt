@@ -1,7 +1,7 @@
 package com.khodchenko.mafia.ui.home
 
 import TimerFragment
-import VotingFragment
+import com.khodchenko.mafia.ui.VotingFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

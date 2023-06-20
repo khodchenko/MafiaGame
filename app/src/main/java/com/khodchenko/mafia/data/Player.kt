@@ -6,7 +6,8 @@ class Player(
     var role: Enum<Role> = Role.CIVIL,
     private var score: Float = 0.0F,
     var penalty: Int = 0,
-    var isAlive: Boolean = true
+    var isAlive: Boolean = true,
+    var isOnVote : Boolean = false
 ) {
     enum class Role {
         CIVIL,

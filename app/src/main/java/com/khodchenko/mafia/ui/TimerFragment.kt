@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.R
@@ -165,6 +166,11 @@ class TimerFragment : Fragment() {
 
                 if (currentPlayer != lastPlayerOfQueueList) {
                     game.setCurrentPlayer(game.nextPlayerSpeech())
+                    Toast.makeText(
+                        requireContext(),
+                        "Текущий игрок: ${game.getCurrentPlayer().name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     notifyPlayerChange(game.getCurrentPlayer())
                 } else {
                     game.setCurrentStage(Game.Stage.VOTING)
@@ -172,8 +178,8 @@ class TimerFragment : Fragment() {
             }
 
             Game.Stage.VOTING -> {
-                val voteHelper: VoteHelper = VoteHelper()
-                if (voteHelper.candidates.isNotEmpty()) {
+
+                if (VoteHelper.getInstance().candidates.isNotEmpty()) {
                     lastWordFromVoting = true
                     game.setCurrentStage(Game.Stage.LAST_WORD)
                 } else {

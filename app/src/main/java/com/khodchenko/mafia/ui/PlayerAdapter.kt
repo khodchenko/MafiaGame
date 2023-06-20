@@ -1,13 +1,16 @@
 package com.khodchenko.mafia.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.ItemPlayerBinding
 
-class PlayerAdapter(private val players: List<Player>, private val playerChangeListener: (Player) -> Unit) :
-    RecyclerView.Adapter<PlayerAdapter.ViewHolder>() {
+class PlayerAdapter(
+    private val players: List<Player>,
+    private val playerClickListener: (Player) -> Unit
+) : RecyclerView.Adapter<PlayerAdapter.ViewHolder>() {
 
     private val roleSmile: Map<Player.Role, String> = hashMapOf(
         Player.Role.CIVIL to "\uD83D\uDE42",
@@ -24,9 +27,13 @@ class PlayerAdapter(private val players: List<Player>, private val playerChangeL
             binding.tvPlayerName.text = player.name
             binding.tvRole.text = roleSmile[player.role]
             binding.tvPenalty.text = player.penalty.toString()
-
+            if (player.isOnVote){
+                binding.tvIsVoted.visibility = View.VISIBLE
+            } else {
+                binding.tvIsVoted.visibility = View.INVISIBLE
+            }
             itemView.setOnClickListener {
-                playerChangeListener(player)
+                playerClickListener(player)
             }
         }
     }

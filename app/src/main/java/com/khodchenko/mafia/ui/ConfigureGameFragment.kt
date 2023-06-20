@@ -92,7 +92,7 @@ class ConfigureGameFragment : Fragment() {
     private fun createPlayerItem(playerName: String) {
         val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
         playerBinding.tvPlayerName.text = playerName
-
+        playerBinding.tvPlayerNumber.text = numberOfPlayers.toString()
         val itemPlayerView = playerBinding.root
         playerBinding.cardView.setPadding(0, 8, 0, 8)
         binding.layoutPlayerList.addView(itemPlayerView)
