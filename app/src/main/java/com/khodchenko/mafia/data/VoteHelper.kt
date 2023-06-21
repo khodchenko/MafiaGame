@@ -15,26 +15,39 @@ class VoteHelper {
     }
 
     var alivePlayers: MutableList<Player> = Game.getInstance().getAlivePlayers()
-    var candidates: MutableList<Player> = mutableListOf()
-    var candidateWithVotes : MutableMap<Player, MutableList<Player>> = mutableMapOf()
+    var candidates:  MutableMap<Player, MutableList<Player>> = mutableMapOf()
 
-    fun add(player: Player) {
-        candidates.add(player)
+    fun addCandidate(player: Player) {
+        candidates.put(player, mutableListOf())
     }
 
-    fun remove(player: Player) {
+    fun removeCandidate(player: Player) {
         candidates.remove(player)
+    }
+   fun addVoteForCandidate( voter: Player) {
+       val lastCandidate = candidates.keys.lastOrNull()
+       lastCandidate?.let { candidate ->
+           candidates[candidate]?.add(voter)
+       }
+    }
+   fun removeVoteForCandidate(voter: Player) {
+        val lastCandidate = candidates.keys.lastOrNull()
+        lastCandidate?.let { candidate ->
+            candidates[candidate]?.remove(voter)
+        }
     }
 
     fun removeAllCandidates(){
-        candidates = mutableListOf()
+        candidates = mutableMapOf()
     }
     fun voteForCandidate(candidate: Player, votes: MutableList<Player>) {
-        this.candidateWithVotes.put(candidate, votes)
+        this.candidates.put(candidate, votes)
     }
 
-    fun calculateVotes(candidatesAndVotes: MutableMap<Player, MutableList<Player>> = this.candidateWithVotes): MutableMap<Player, MutableList<Player>> {
+    fun calculateVotes(candidatesAndVotes: MutableMap<Player, MutableList<Player>> = this.candidates): MutableMap<Player, MutableList<Player>> {
         val maxVotes = candidatesAndVotes.values.map { it.size }.maxOrNull()
         return candidatesAndVotes.filterValues { it.size == maxVotes }.toMutableMap()
     }
+
+
 }

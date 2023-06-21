@@ -14,7 +14,7 @@ import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentPlayerListBinding
 
-class DayFragment : Fragment() {
+class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
 
     interface OnPlayerChangeListener {
         fun onPlayerChanged(player: Player)
@@ -44,6 +44,27 @@ class DayFragment : Fragment() {
 
         return root
     }
+    override fun onPlayerClick(player: Player) {
+        if (!itemPlayerClicked) {
+            Snackbar.make(binding.root, "${Game.getInstance().getCurrentPlayer().name} выставил игрока ${player.name}", Snackbar.LENGTH_SHORT)
+                .show()
+            player.isOnVote = true
+            VoteHelper.getInstance().addCandidate(player)
+        } else {
+            Snackbar.make(binding.root, "Вы отменили выбор игрока ${player.name}", Snackbar.LENGTH_SHORT)
+                .show()
+            player.isOnVote = false
+            VoteHelper.getInstance().removeCandidate(player)
+        }
+
+        itemPlayerClicked = !itemPlayerClicked
+        playerAdapter.notifyDataSetChanged()
+        playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
+    }
+
+    override fun isPlayerSelected(player: Player): Boolean {
+        return itemPlayerClicked && player.isOnVote
+    }
 
     fun onPlayerChanged(player: Player) {
         currentPlayer = player
@@ -52,26 +73,8 @@ class DayFragment : Fragment() {
 
     private fun setupRecyclerView() {
         playerList = Game.getInstance().getAllPlayers()
-        playerAdapter = PlayerAdapter(playerList) { player ->
-            onPlayerChanged(player)
-            Toast.makeText(requireContext(), player.name, Toast.LENGTH_SHORT).show()
-            if (!itemPlayerClicked) {
-                Snackbar.make(binding.root, "${Game.getInstance().getCurrentPlayer().name} выставил игрока ${player.name}", Snackbar.LENGTH_SHORT)
-                    .show()
-                player.isOnVote = true
-               VoteHelper.getInstance().add(player)
-                itemPlayerClicked = true
-                playerAdapter.notifyDataSetChanged()
-            } else {
-                Snackbar.make(binding.root, "Вы отменили выбор игрока ${player.name}", Snackbar.LENGTH_SHORT)
-                    .show()
-                player.isOnVote = false
-                VoteHelper.getInstance().remove(player)
-                itemPlayerClicked = false
-                playerAdapter.notifyDataSetChanged()
-            }
+        playerAdapter = PlayerAdapter(playerList, this)
 
-        }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = playerAdapter
