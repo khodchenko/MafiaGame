@@ -21,7 +21,7 @@ class Player(
         return false
     }
 
-    fun copy(role: Player.Role) {
-
+    fun copy(role: Role): Player {
+        return Player(name, number, role, score, penalty, isAlive, isOnVote)
     }
 }

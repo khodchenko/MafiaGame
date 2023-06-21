@@ -1,11 +1,11 @@
 package com.khodchenko.mafia.ui
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -14,7 +14,6 @@ import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentConfigureGameBinding
 import com.khodchenko.mafia.databinding.ItemPlayerBinding
-
 
 class ConfigureGameFragment : Fragment() {
     private var _binding: FragmentConfigureGameBinding? = null
@@ -59,7 +58,6 @@ class ConfigureGameFragment : Fragment() {
 
         binding.buttonStart.setOnClickListener {
             if (nameOfPlayers.size > 0) {
-
                 Game.getInstance().addPlayers(playerNames = nameOfPlayers)
                 findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
             }
@@ -75,8 +73,7 @@ class ConfigureGameFragment : Fragment() {
                 createPlayerItem(playerName)
                 binding.setPlayerName.text.clear()
             } else {
-                Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -97,12 +94,20 @@ class ConfigureGameFragment : Fragment() {
         playerBinding.cardView.setPadding(0, 8, 0, 8)
         binding.layoutPlayerList.addView(itemPlayerView)
 
-        val spinnerOptions = playerBinding.spinnerOptions
-        val roles = listOf(Player.Role.CIVIL, Player.Role.MAFIA, Player.Role.DON, Player.Role.SHERIFF)
-        val adapter = RoleSpinnerAdapter(requireContext(), roles)
-        spinnerOptions.adapter = adapter
+        setupRoleSpinner(playerBinding.spinnerOptions)
+    }
 
-        spinnerOptions.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+    private fun setupRoleSpinner(spinner: AdapterView<*>) {
+        val roles = listOf(
+            Player.Role.CIVIL,
+            Player.Role.MAFIA,
+            Player.Role.DON,
+            Player.Role.SHERIFF
+        )
+        val adapter = RoleSpinnerAdapter(requireContext(), roles)
+        spinner.adapter = adapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -110,6 +115,9 @@ class ConfigureGameFragment : Fragment() {
                 id: Long
             ) {
                 val selectedRole = adapter.getItem(position)
+                val playerName = (parent?.selectedView?.parent as? ViewGroup)?.getChildAt(1)?.let { it as TextView }?.text.toString()
+                val player = getPlayerByName(playerName)
+                player?.role = selectedRole
                 Toast.makeText(context, "Выбрана роль: $selectedRole", Toast.LENGTH_SHORT).show()
             }
 
@@ -117,6 +125,10 @@ class ConfigureGameFragment : Fragment() {
                 // Ничего не делаем
             }
         }
+    }
+
+    private fun getPlayerByName(playerName: String): Player? {
+        return Game.getInstance().getAllPlayers().find { it.name == playerName }
     }
 
     override fun onDestroyView() {

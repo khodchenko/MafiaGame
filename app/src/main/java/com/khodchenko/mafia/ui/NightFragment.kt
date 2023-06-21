@@ -54,7 +54,7 @@ class NightFragment : Fragment() {
         val playerList = getPlayerList()
         val playerNames = playerList.map { it.name }
         val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, playerNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         spinnerTarget1.adapter = adapter
         spinnerTarget2.adapter = adapter
         spinnerTarget3.adapter = adapter
