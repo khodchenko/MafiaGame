@@ -14,8 +14,9 @@ class VoteHelper {
         }
     }
 
-    var alivePlayers: MutableList<Player> = Game.getInstance().getAlivePlayers()
     var candidates:  MutableMap<Player, MutableList<Player>> = mutableMapOf()
+    var currentCandidate: Player? = candidates.keys.elementAt(0) ?: null
+    val currentCandidateIndex: Int = candidates.keys.indexOf(currentCandidate)
 
     fun addCandidate(player: Player) {
         candidates.put(player, mutableListOf())
@@ -36,6 +37,12 @@ class VoteHelper {
             candidates[candidate]?.remove(voter)
         }
     }
+
+    fun nextCandidate() {
+        val currentCandidateIndex = candidates.keys.indexOf(currentCandidate)
+        currentCandidate = candidates.keys.elementAt(currentCandidateIndex + 1)
+    }
+
 
     fun removeAllCandidates(){
         candidates = mutableMapOf()

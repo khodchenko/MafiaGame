@@ -33,11 +33,11 @@ class VotingFragment : Fragment(), PlayerAdapter.PlayerClickListener {
     override fun onPlayerClick(player: Player) {
         if (isPlayerSelected(player)) {
             VoteHelper.getInstance().removeVoteForCandidate(player)
-            Toast.makeText(requireContext(), "Убрал голос", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "Убрал голос", Toast.LENGTH_SHORT).show()
             playerAdapter.removeSelectedPlayer(player)
         } else {
             VoteHelper.getInstance().addVoteForCandidate(player)
-            Toast.makeText(requireContext(), "Поставил голос", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "Поставил голос", Toast.LENGTH_SHORT).show()
             playerAdapter.addSelectedPlayer(player)
         }
 

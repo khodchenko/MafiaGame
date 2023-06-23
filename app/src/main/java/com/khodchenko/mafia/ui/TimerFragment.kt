@@ -1,13 +1,10 @@
-import android.content.ContentValues.TAG
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.R
@@ -18,7 +15,7 @@ import com.khodchenko.mafia.databinding.FragmentTimerBinding
 import com.khodchenko.mafia.ui.home.HomeFragment
 
 private const val TOTAL_TIME = 60000L
-private const val HALF_TIME = 60000L
+private const val HALF_TIME = 30000L
 private const val INTERVAL = 1000L
 
 class TimerFragment : Fragment() {
@@ -30,7 +27,7 @@ class TimerFragment : Fragment() {
     private var isTimerRunning = false
     private var remainingTime: Long = 0
     private var mediaPlayer: MediaPlayer? = null
-    private lateinit var lastWordFrom : Game.Stage
+    private lateinit var lastWordFrom: Game.Stage
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -172,7 +169,12 @@ class TimerFragment : Fragment() {
                 if (currentPlayer != lastPlayerOfQueueList) {
                     game.setCurrentPlayer(game.nextPlayerSpeech())
 
-                    Snackbar.make(requireContext(), requireView(), "Следующий игрок: ${game.getCurrentPlayer().name}", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        requireContext(),
+                        requireView(),
+                        "Следующий игрок: ${game.getCurrentPlayer().name}",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
 
                     notifyPlayerChange(game.getCurrentPlayer())
                 } else {
@@ -181,10 +183,14 @@ class TimerFragment : Fragment() {
             }
 
             Game.Stage.VOTING -> {
+                val voteHelper = VoteHelper.getInstance()
 
-                if (VoteHelper.getInstance().candidates.isNotEmpty()) {
+                if (voteHelper.candidates.isNotEmpty() && voteHelper.candidates.size == 1) {
                     game.setCurrentStage(Game.Stage.LAST_WORD)
                     lastWordFrom = Game.Stage.VOTING
+                } else if (voteHelper.candidates.size > 1 && voteHelper.currentCandidateIndex < voteHelper.candidates.size - 1) {
+                    game.setCurrentStage(Game.Stage.VOTING)
+                    voteHelper.nextCandidate()
                 } else {
                     game.setCurrentStage(Game.Stage.NIGHT)
                     game.nextDay()
@@ -195,13 +201,15 @@ class TimerFragment : Fragment() {
             Game.Stage.LAST_WORD -> {
                 if (game.getKickedPlayers().size > 1) {
                     game.setCurrentStage(Game.Stage.LAST_WORD)
-
-                }else if (lastWordFrom == Game.Stage.NIGHT) {
+                    game.kickPlayer()
+                } else if (lastWordFrom == Game.Stage.NIGHT) {
+                    game.kickPlayer()
                     game.setCurrentStage(Game.Stage.DAY)
+                } else {
+                    game.kickPlayer()
+                    game.setCurrentStage(Game.Stage.NIGHT)
                     game.nextDay()
                     game.setSpeechPlayerOrder()
-                } else {
-                    game.setCurrentStage(Game.Stage.NIGHT)
                 }
             }
         }

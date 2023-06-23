@@ -111,10 +111,9 @@ class Game {
         }
     }
 
-    private fun kickPlayers() {
-        for (player in kickedPlayers.keys) {
-            player.isAlive = false
-        }
+    fun kickPlayer() {
+        kickedPlayers.keys.last().isAlive = false
+        kickedPlayers.remove(kickedPlayers.keys.last())
     }
 
     fun getKickedPlayers(): MutableList<Player> {
