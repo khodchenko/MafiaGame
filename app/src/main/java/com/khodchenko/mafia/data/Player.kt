@@ -7,7 +7,7 @@ class Player(
     private var score: Float = 0.0F,
     var penalty: Int = 0,
     var isAlive: Boolean = true,
-    var isOnVote : Boolean = false
+    var isOnVote: Boolean = false
 ) {
     enum class Role {
         CIVIL,

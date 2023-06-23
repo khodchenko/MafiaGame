@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -20,6 +19,7 @@ class ConfigureGameFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val nameOfPlayers: ArrayList<String> = arrayListOf()
+    private val playerRoles : MutableList<Player.Role> = mutableListOf()
     private var numberOfPlayers: Int = 0
 
     private val roleSmile: Map<Player.Role, String> = hashMapOf(
@@ -58,7 +58,7 @@ class ConfigureGameFragment : Fragment() {
 
         binding.buttonStart.setOnClickListener {
             if (nameOfPlayers.size > 0) {
-                Game.getInstance().addPlayers(playerNames = nameOfPlayers)
+                Game.getInstance().addPlayers(playerNames = nameOfPlayers, playerRoles = playerRoles)
                 findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
             }
         }
@@ -70,7 +70,16 @@ class ConfigureGameFragment : Fragment() {
             if (numberOfPlayers < 10) {
                 nameOfPlayers.add(playerName)
                 numberOfPlayers++
-                createPlayerItem(playerName)
+
+                val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
+                playerBinding.tvPlayerName.text = playerName
+                playerBinding.tvPlayerNumber.text = numberOfPlayers.toString()
+                val itemPlayerView = playerBinding.root
+                binding.layoutPlayerList.addView(itemPlayerView)
+
+                val spinner = playerBinding.spinnerOptions
+                setupRoleSpinner(spinner)
+
                 binding.setPlayerName.text.clear()
             } else {
                 Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT).show()
@@ -86,24 +95,14 @@ class ConfigureGameFragment : Fragment() {
         }
     }
 
-    private fun createPlayerItem(playerName: String) {
-        val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
-        playerBinding.tvPlayerName.text = playerName
-        playerBinding.tvPlayerNumber.text = numberOfPlayers.toString()
-        val itemPlayerView = playerBinding.root
-        playerBinding.cardView.setPadding(0, 8, 0, 8)
-        binding.layoutPlayerList.addView(itemPlayerView)
-
-        setupRoleSpinner(playerBinding.spinnerOptions)
-    }
-
     private fun setupRoleSpinner(spinner: AdapterView<*>) {
-        val roles = listOf(
+        val roles = arrayOf(
             Player.Role.CIVIL,
             Player.Role.MAFIA,
             Player.Role.DON,
             Player.Role.SHERIFF
         )
+
         val adapter = RoleSpinnerAdapter(requireContext(), roles)
         spinner.adapter = adapter
 
@@ -114,10 +113,8 @@ class ConfigureGameFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                val selectedRole = adapter.getItem(position)
-                val playerName = (parent?.selectedView?.parent as? ViewGroup)?.getChildAt(1)?.let { it as TextView }?.text.toString()
-                val player = getPlayerByName(playerName)
-                player?.role = selectedRole
+                val selectedRole = roles[position]
+                playerRoles.add(position, selectedRole)
                 Toast.makeText(context, "Выбрана роль: $selectedRole", Toast.LENGTH_SHORT).show()
             }
 
@@ -125,10 +122,6 @@ class ConfigureGameFragment : Fragment() {
                 // Ничего не делаем
             }
         }
-    }
-
-    private fun getPlayerByName(playerName: String): Player? {
-        return Game.getInstance().getAllPlayers().find { it.name == playerName }
     }
 
     override fun onDestroyView() {

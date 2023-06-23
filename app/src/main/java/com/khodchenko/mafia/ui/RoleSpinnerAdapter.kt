@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.khodchenko.mafia.data.Player
 
-class RoleSpinnerAdapter(private val context: Context, private val roles: List<Player.Role>) :
+class RoleSpinnerAdapter(private val context: Context, private val roles: Array<Player.Role>) :
     ArrayAdapter<Player.Role>(context, android.R.layout.simple_spinner_item, roles) {
 
     private val roleSmile: Map<Player.Role, String> = hashMapOf(

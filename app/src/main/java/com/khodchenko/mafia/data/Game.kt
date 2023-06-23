@@ -88,6 +88,14 @@ class Game  {
         return player.role as Player.Role
     }
 
+    fun checkRoleAllPlayers(): MutableMap<Player, Player.Role> {
+        val playerRoles: MutableMap<Player, Player.Role> = mutableMapOf()
+        for (player in playerList) {
+            playerRoles[player] = checkPlayerRole(player)
+        }
+        return playerRoles
+    }
+
     fun makeShoot(targets: MutableList<Player>) {
         val distinctTargets = targets.distinct()
         val areTargetsEqual = distinctTargets.size == 1
@@ -124,9 +132,9 @@ class Game  {
         }
     }
 
-    fun addPlayers(playerNames: ArrayList<String>) {
+    fun addPlayers(playerNames: ArrayList<String>, playerRoles : MutableList<Player.Role>) {
         for (player in playerNames) {
-            playerList.add(Player(player, playerList.size+1))
+            playerList.add(Player(player, playerList.size+1, role = playerRoles[playerList.size]))
         }
     }
 
@@ -148,9 +156,8 @@ class Game  {
         return shuffledPlayers
     }
 
-    private fun giveRoleToPlayer(player: Player, role: Player.Role): Player {
+     fun giveRoleToPlayer(player: Player, role: Player.Role) {
         player.role = role
-        return player
     }
 
     private fun clearPlayers() {

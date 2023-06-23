@@ -1,7 +1,9 @@
+import android.content.ContentValues.TAG
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -157,6 +159,7 @@ class TimerFragment : Fragment() {
                     game.setCurrentStage(Game.Stage.LAST_WORD)
                 } else {
                     game.setCurrentStage(Game.Stage.DAY)
+                        Log.d(TAG, "nextButtonClick: Current stage ${game.getCurrentStage()} player roles ${game.checkRoleAllPlayers().values}")
                 }
             }
 
