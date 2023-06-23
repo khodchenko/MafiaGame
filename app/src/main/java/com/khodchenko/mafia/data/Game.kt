@@ -1,8 +1,9 @@
 package com.khodchenko.mafia.data
 
-class Game  {
+class Game {
 
     private constructor()
+
     interface GameObserver {
         fun onStageChanged(newStage: Game.Stage)
 
@@ -27,7 +28,7 @@ class Game  {
     private var currentStage = Stage.NIGHT
     private var speechPlayerOrder: MutableList<Player> = mutableListOf()
     private val observers: MutableList<GameObserver> = mutableListOf()
-    private var kickedPlayers: MutableList<Player>? = null
+    private var kickedPlayers: MutableMap<Player, Stage> = mutableMapOf()
 
     enum class Stage {
         NIGHT,
@@ -40,6 +41,7 @@ class Game  {
         currentPlayer = playerList[0]
         speechPlayerOrder = getAlivePlayers()
     }
+
     fun addObserver(observer: GameObserver) {
         observers.add(observer)
     }
@@ -102,22 +104,21 @@ class Game  {
         if (areTargetsEqual) {
             val target = distinctTargets[0]
             if (target.isAlive) {
-                kickPlayers(mutableMapOf(target to mutableListOf()))
+                kickedPlayers.put(target, Stage.NIGHT)
             }
         } else {
 
         }
     }
 
-    private fun kickPlayers(voteResult: MutableMap<Player, MutableList<Player>>) {
-        for (player in voteResult.keys) {
+    private fun kickPlayers() {
+        for (player in kickedPlayers.keys) {
             player.isAlive = false
         }
-        kickedPlayers = voteResult.keys.toMutableList()
     }
 
-    fun getKickedPlayers(): MutableList<Player>? {
-        return kickedPlayers
+    fun getKickedPlayers(): MutableList<Player> {
+        return kickedPlayers.keys.toMutableList()
     }
 
     private fun checkGameEnd(alivePlayers: MutableList<Player>) {
@@ -132,9 +133,9 @@ class Game  {
         }
     }
 
-    fun addPlayers(playerNames: ArrayList<String>, playerRoles : MutableList<Player.Role>) {
+    fun addPlayers(playerNames: ArrayList<String>, playerRoles: MutableList<Player.Role>) {
         for (player in playerNames) {
-            playerList.add(Player(player, playerList.size+1, role = playerRoles[playerList.size]))
+            playerList.add(Player(player, playerList.size + 1, role = playerRoles[playerList.size]))
         }
     }
 
@@ -154,10 +155,6 @@ class Game  {
             }
         }
         return shuffledPlayers
-    }
-
-     fun giveRoleToPlayer(player: Player, role: Player.Role) {
-        player.role = role
     }
 
     private fun clearPlayers() {

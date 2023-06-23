@@ -30,6 +30,7 @@ class TimerFragment : Fragment() {
     private var isTimerRunning = false
     private var remainingTime: Long = 0
     private var mediaPlayer: MediaPlayer? = null
+    private lateinit var lastWordFrom : Game.Stage
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,10 +70,12 @@ class TimerFragment : Fragment() {
         initMediaPlayer()
         return root
     }
+
     private fun notifyPlayerChange(player: Player) {
         val homeFragment = requireParentFragment() as? HomeFragment
         homeFragment?.onPlayerChanged(player)
     }
+
     private fun updateHeaderText() {
         binding.tvCurrentPlayer.text = Game.getInstance().getCurrentPlayer().name
         binding.tvSpeechHeader.text =
@@ -151,15 +154,14 @@ class TimerFragment : Fragment() {
 
     private fun nextButtonClick() {
         val game = Game.getInstance()
-        var lastWordFromVoting = false
 
         when (game.getCurrentStage()) {
             Game.Stage.NIGHT -> {
-                if (game.getKickedPlayers()?.isNotEmpty() == true) {
+                if (game.getKickedPlayers().isNotEmpty()) {
                     game.setCurrentStage(Game.Stage.LAST_WORD)
+                    lastWordFrom = Game.Stage.NIGHT
                 } else {
                     game.setCurrentStage(Game.Stage.DAY)
-                        Log.d(TAG, "nextButtonClick: Current stage ${game.getCurrentStage()} player roles ${game.checkRoleAllPlayers().values}")
                 }
             }
 
@@ -169,11 +171,9 @@ class TimerFragment : Fragment() {
 
                 if (currentPlayer != lastPlayerOfQueueList) {
                     game.setCurrentPlayer(game.nextPlayerSpeech())
-                    Toast.makeText(
-                        requireContext(),
-                        "Текущий игрок: ${game.getCurrentPlayer().name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
+                    Snackbar.make(requireContext(), requireView(), "Следующий игрок: ${game.getCurrentPlayer().name}", Snackbar.LENGTH_SHORT).show()
+
                     notifyPlayerChange(game.getCurrentPlayer())
                 } else {
                     game.setCurrentStage(Game.Stage.VOTING)
@@ -183,21 +183,25 @@ class TimerFragment : Fragment() {
             Game.Stage.VOTING -> {
 
                 if (VoteHelper.getInstance().candidates.isNotEmpty()) {
-                    lastWordFromVoting = true
                     game.setCurrentStage(Game.Stage.LAST_WORD)
+                    lastWordFrom = Game.Stage.VOTING
                 } else {
                     game.setCurrentStage(Game.Stage.NIGHT)
+                    game.nextDay()
+                    game.setSpeechPlayerOrder()
                 }
             }
 
             Game.Stage.LAST_WORD -> {
-                if (lastWordFromVoting) {
-                    game.setCurrentStage(Game.Stage.NIGHT)
-                    lastWordFromVoting = false
+                if (game.getKickedPlayers().size > 1) {
+                    game.setCurrentStage(Game.Stage.LAST_WORD)
+
+                }else if (lastWordFrom == Game.Stage.NIGHT) {
+                    game.setCurrentStage(Game.Stage.DAY)
                     game.nextDay()
                     game.setSpeechPlayerOrder()
                 } else {
-                    game.setCurrentStage(Game.Stage.DAY)
+                    game.setCurrentStage(Game.Stage.NIGHT)
                 }
             }
         }

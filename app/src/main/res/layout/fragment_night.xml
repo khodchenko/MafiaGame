@@ -13,6 +13,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="mafia_player"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
         android:text="mafia_player"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@+id/tv_player_role2"
         app:layout_constraintStart_toStartOf="@+id/tv_player_role2"
         app:layout_constraintTop_toBottomOf="@+id/tv_player_role2" />
@@ -32,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
         android:text="mafia_player"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/tv_player_role1"
         app:layout_constraintTop_toBottomOf="@+id/tv_player_role1" />
 
