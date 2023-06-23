@@ -15,13 +15,4 @@ class Player(
         MAFIA,
         DON
     }
-
-    fun isMafia(): Boolean {
-        if (role == Role.DON || role == Role.MAFIA) return true
-        return false
-    }
-
-    fun copy(role: Role): Player {
-        return Player(name, number, role, score, penalty, isAlive, isOnVote)
-    }
 }

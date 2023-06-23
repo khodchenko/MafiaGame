@@ -186,6 +186,8 @@ class TimerFragment : Fragment() {
                 val voteHelper = VoteHelper.getInstance()
 
                 if (voteHelper.candidates.isNotEmpty() && voteHelper.candidates.size == 1) {
+                    game.makeVote(voteHelper.candidates.keys.first()) //put only one to kick list
+                    voteHelper.clearCandidates()
                     game.setCurrentStage(Game.Stage.LAST_WORD)
                     lastWordFrom = Game.Stage.VOTING
                 } else if (voteHelper.candidates.size > 1 && voteHelper.currentCandidateIndex < voteHelper.candidates.size - 1) {

@@ -71,7 +71,7 @@ class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
     }
 
     private fun setupRecyclerView() {
-        playerList = Game.getInstance().getAllPlayers()
+        playerList = Game.getInstance().getAlivePlayers()
         playerAdapter = PlayerAdapter(playerList, this)
 
         binding.recyclerView.apply {

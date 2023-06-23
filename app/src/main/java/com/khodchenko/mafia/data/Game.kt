@@ -111,9 +111,15 @@ class Game {
         }
     }
 
+    fun makeVote(player: Player){
+        kickedPlayers.put(player, Stage.VOTING)
+    }
+
     fun kickPlayer() {
         kickedPlayers.keys.last().isAlive = false
+        speechPlayerOrder.remove(kickedPlayers.keys.last())
         kickedPlayers.remove(kickedPlayers.keys.last())
+
     }
 
     fun getKickedPlayers(): MutableList<Player> {
