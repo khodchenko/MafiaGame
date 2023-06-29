@@ -29,17 +29,92 @@ class Game {
     private var speechPlayerOrder: MutableList<Player> = mutableListOf()
     private val observers: MutableList<GameObserver> = mutableListOf()
     private var kickedPlayers: MutableMap<Player, Stage> = mutableMapOf()
+    private lateinit var lastWordFrom: Game.Stage
 
     enum class Stage {
         NIGHT,
         LAST_WORD,
         DAY,
-        VOTING
+        VOTING,
+        WIN
     }
 
     fun startGame() {
         currentPlayer = playerList[0]
         speechPlayerOrder = getAlivePlayers()
+    }
+
+    fun processNextButtonClick() {
+        when (getCurrentStage()) {
+            Stage.NIGHT -> {
+                if (getKickedPlayers().isNotEmpty()) {
+                    setCurrentStage(Stage.LAST_WORD)
+                    lastWordFrom = Stage.NIGHT
+                } else {
+                    setCurrentStage(Stage.DAY)
+                }
+            }
+
+            Stage.DAY -> {
+                val currentPlayer = getCurrentPlayer()
+                val lastPlayerOfQueueList = getSpeechPlayerOrder().last()
+
+                if (currentPlayer != lastPlayerOfQueueList) {
+                    setCurrentPlayer(nextPlayerSpeech())
+
+                    // Уведомить наблюдателей о смене игрока
+                    notifyPlayerChanged(getCurrentPlayer())
+                } else {
+                    if (VoteHelper.getInstance().candidates.isEmpty()){
+                        setCurrentStage(Stage.NIGHT)
+                        nextDay()
+                        setSpeechPlayerOrder()
+                    } else {
+                        setCurrentStage(Stage.VOTING)
+                    }
+                }
+            }
+
+            Stage.VOTING -> {
+                val voteHelper = VoteHelper.getInstance()
+
+               if (voteHelper.candidates.size == 1) {
+                    makeVote(voteHelper.candidates.keys.first()) //put only one to kick list
+                    voteHelper.clearCandidates()
+                    setCurrentStage(Stage.LAST_WORD)
+                    lastWordFrom = Stage.VOTING
+
+                } else if (voteHelper.currentCandidateIndex < voteHelper.candidates.size - 1) {
+                   voteHelper.nextCandidate()
+
+                } else {
+                    voteHelper.calculateVotes()
+                    voteHelper.currentCandidateIndex = 0
+                }
+            }
+
+            Stage.LAST_WORD -> {
+                if (getKickedPlayers().size > 1) {
+                    setCurrentStage(Stage.LAST_WORD)
+                    kickPlayer()
+                } else if (lastWordFrom == Stage.NIGHT) {
+                    kickPlayer()
+                    setCurrentStage(Stage.DAY)
+                    checkGameEnd()
+                } else {
+                    //from day
+                    kickPlayer()
+                    setCurrentStage(Stage.NIGHT)
+                    nextDay()
+                    setSpeechPlayerOrder()
+                    checkGameEnd()
+                }
+            }
+
+            Stage.WIN -> {
+
+            }
+        }
     }
 
     fun addObserver(observer: GameObserver) {
@@ -111,7 +186,7 @@ class Game {
         }
     }
 
-    fun makeVote(player: Player){
+    fun makeVote(player: Player) {
         kickedPlayers.put(player, Stage.VOTING)
     }
 
@@ -126,15 +201,17 @@ class Game {
         return kickedPlayers.keys.toMutableList()
     }
 
-    private fun checkGameEnd(alivePlayers: MutableList<Player>) {
+    fun checkGameEnd() {
         val redPlayers = getAllRedPlayers()
         val blackPlayers = getAllBlackPlayers()
 
         if (blackPlayers.size == redPlayers.size) {
             inGame = false
+            Stage.WIN
         }
         if (blackPlayers.size == 0) {
             inGame = false
+            Stage.WIN
         }
     }
 
@@ -186,12 +263,12 @@ class Game {
         }.toMutableList()
     }
 
-    private fun getDonOrNull(allPlayers: MutableList<Player>): Player? {
-        return allPlayers.find { it.role == Player.Role.DON && it.isAlive }
+    private fun getDonOrNull(): Player? {
+        return playerList.find { it.role == Player.Role.DON && it.isAlive }
     }
 
-    private fun getSheriffOrNull(allPlayers: MutableList<Player>): Player? {
-        return allPlayers.find { it.role == Player.Role.SHERIFF && it.isAlive }
+    private fun getSheriffOrNull(): Player? {
+        return playerList.find { it.role == Player.Role.SHERIFF && it.isAlive }
     }
 
     fun getAlivePlayers(): MutableList<Player> {

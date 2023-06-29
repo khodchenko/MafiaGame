@@ -1,3 +1,4 @@
+import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -27,7 +28,7 @@ class TimerFragment : Fragment() {
     private var isTimerRunning = false
     private var remainingTime: Long = 0
     private var mediaPlayer: MediaPlayer? = null
-    private lateinit var lastWordFrom: Game.Stage
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -151,69 +152,23 @@ class TimerFragment : Fragment() {
 
     private fun nextButtonClick() {
         val game = Game.getInstance()
+        val voteHelper = VoteHelper.getInstance()
 
-        when (game.getCurrentStage()) {
-            Game.Stage.NIGHT -> {
-                if (game.getKickedPlayers().isNotEmpty()) {
-                    game.setCurrentStage(Game.Stage.LAST_WORD)
-                    lastWordFrom = Game.Stage.NIGHT
-                } else {
-                    game.setCurrentStage(Game.Stage.DAY)
+        if (voteHelper.voteStage ==  2) {
+            val  dialog = AlertDialog.Builder(requireContext()).apply {
+                setTitle("Выгнать всех кандидатов?")
+                setMessage("123")
+                setPositiveButton("Выгнать") { dialog, which ->
+                    //todo выгнать всех кандидатов в списке
+                    dialog.cancel()
+                }
+                setNegativeButton("Оставить") { dialog, which ->
+                    dialog.cancel()
                 }
             }
-
-            Game.Stage.DAY -> {
-                val currentPlayer = game.getCurrentPlayer()
-                val lastPlayerOfQueueList = game.getSpeechPlayerOrder().last()
-
-                if (currentPlayer != lastPlayerOfQueueList) {
-                    game.setCurrentPlayer(game.nextPlayerSpeech())
-
-                    Snackbar.make(
-                        requireContext(),
-                        requireView(),
-                        "Следующий игрок: ${game.getCurrentPlayer().name}",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-
-                    notifyPlayerChange(game.getCurrentPlayer())
-                } else {
-                    game.setCurrentStage(Game.Stage.VOTING)
-                }
-            }
-
-            Game.Stage.VOTING -> {
-                val voteHelper = VoteHelper.getInstance()
-
-                if (voteHelper.candidates.isNotEmpty() && voteHelper.candidates.size == 1) {
-                    game.makeVote(voteHelper.candidates.keys.first()) //put only one to kick list
-                    voteHelper.clearCandidates()
-                    game.setCurrentStage(Game.Stage.LAST_WORD)
-                    lastWordFrom = Game.Stage.VOTING
-                } else if (voteHelper.candidates.size > 1 && voteHelper.currentCandidateIndex < voteHelper.candidates.size - 1) {
-                    game.setCurrentStage(Game.Stage.VOTING)
-                    voteHelper.nextCandidate()
-                } else {
-                    game.setCurrentStage(Game.Stage.NIGHT)
-                    game.nextDay()
-                    game.setSpeechPlayerOrder()
-                }
-            }
-
-            Game.Stage.LAST_WORD -> {
-                if (game.getKickedPlayers().size > 1) {
-                    game.setCurrentStage(Game.Stage.LAST_WORD)
-                    game.kickPlayer()
-                } else if (lastWordFrom == Game.Stage.NIGHT) {
-                    game.kickPlayer()
-                    game.setCurrentStage(Game.Stage.DAY)
-                } else {
-                    game.kickPlayer()
-                    game.setCurrentStage(Game.Stage.NIGHT)
-                    game.nextDay()
-                    game.setSpeechPlayerOrder()
-                }
-            }
+            dialog.show()
+        } else {
+            game.processNextButtonClick()
         }
 
         updateHeaderText()

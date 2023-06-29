@@ -1,6 +1,7 @@
 package com.khodchenko.mafia.ui
 
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,17 +45,29 @@ class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
         return root
     }
     override fun onPlayerClick(player: Player) {
-        if (!itemPlayerClicked) {
-            Snackbar.make(binding.root, "${Game.getInstance().getCurrentPlayer().name} выставил игрока ${player.name}", Snackbar.LENGTH_SHORT)
-                .show()
-            player.isOnVote = true
-            VoteHelper.getInstance().addCandidate(player)
-        } else {
-            Snackbar.make(binding.root, "Вы отменили выбор игрока ${player.name}", Snackbar.LENGTH_SHORT)
-                .show()
-            player.isOnVote = false
-            VoteHelper.getInstance().removeCandidate(player)
-        }
+        val  dialog = AlertDialog.Builder(requireContext()).apply {
+            setTitle("Выбор игрока")
+            setMessage("Вы хотите выставить игрока ${player.name} на голосование?")
+            setPositiveButton("Выставить/Отменить") { _, _ ->
+                if (!itemPlayerClicked) {
+                    Snackbar.make(binding.root, "${Game.getInstance().getCurrentPlayer().name} выставил игрока ${player.name}", Snackbar.LENGTH_SHORT)
+                        .show()
+                    player.isOnVote = true
+                    VoteHelper.getInstance().addCandidate(player)
+                } else {
+                    Snackbar.make(binding.root, "Вы отменили выбор игрока ${player.name}", Snackbar.LENGTH_SHORT)
+                        .show()
+                    player.isOnVote = false
+                    VoteHelper.getInstance().removeCandidate(player)
+                }
+            }
+            setNegativeButton("Дать фол") { _, _ ->
+                player.penalty ++
+                Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+        }.create()
+        dialog.show()
 
         itemPlayerClicked = !itemPlayerClicked
         playerAdapter.notifyDataSetChanged()

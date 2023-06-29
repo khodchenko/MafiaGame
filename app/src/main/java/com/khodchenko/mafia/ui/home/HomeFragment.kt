@@ -14,6 +14,7 @@ import com.khodchenko.mafia.databinding.FragmentHomeBinding
 import com.khodchenko.mafia.ui.DayFragment
 import com.khodchenko.mafia.ui.LastWordFragment
 import com.khodchenko.mafia.ui.NightFragment
+import com.khodchenko.mafia.ui.WinFragment
 
 
 class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameObserver {
@@ -54,7 +55,7 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
     }
 
     override fun onStageChanged(newStage: Game.Stage) {
-        // Обновить UI в соответствии с новой стадией
+
         when (newStage) {
             Game.Stage.NIGHT -> {
                 showNightFragment()
@@ -67,6 +68,9 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
             }
             Game.Stage.VOTING -> {
                 showVotingFragment()
+            }
+            Game.Stage.WIN -> {
+                showWinFragment()
             }
         }
     }
@@ -92,6 +96,12 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
     private fun showVotingFragment() {
         childFragmentManager.beginTransaction()
             .replace(containerPlayerListFragment.id, VotingFragment())
+            .commit()
+    }
+
+    private fun showWinFragment() {
+        childFragmentManager.beginTransaction()
+            .replace(containerPlayerListFragment.id, WinFragment())
             .commit()
     }
 

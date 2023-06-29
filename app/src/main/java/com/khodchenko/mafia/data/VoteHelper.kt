@@ -16,6 +16,7 @@ class VoteHelper {
 
     var candidates: MutableMap<Player, MutableList<Player>> = mutableMapOf()
     var currentCandidateIndex: Int = 0
+    var voteStage: Int = 0
 
     fun addCandidate(player: Player) {
         candidates.put(player, mutableListOf())
@@ -50,13 +51,10 @@ class VoteHelper {
         currentCandidateIndex = 0
     }
 
-    fun voteForCandidate(candidate: Player, votes: MutableList<Player>) {
-        this.candidates.put(candidate, votes)
-    }
-
-    fun calculateVotes(candidatesAndVotes: MutableMap<Player, MutableList<Player>> = this.candidates): MutableMap<Player, MutableList<Player>> {
-        val maxVotes = candidatesAndVotes.values.map { it.size }.maxOrNull()
-        return candidatesAndVotes.filterValues { it.size == maxVotes }.toMutableMap()
+    fun calculateVotes(): MutableMap<Player, MutableList<Player>> {
+        val maxVotes = candidates.values.map { it.size }.maxOrNull()
+        voteStage ++
+        return candidates.filterValues { it.size == maxVotes }.toMutableMap()
     }
 
 

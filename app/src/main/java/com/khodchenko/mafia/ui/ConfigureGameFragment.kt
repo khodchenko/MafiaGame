@@ -1,6 +1,8 @@
 package com.khodchenko.mafia.ui
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +21,7 @@ class ConfigureGameFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val nameOfPlayers: ArrayList<String> = arrayListOf()
-    private val playerRoles : MutableList<Player.Role> = mutableListOf()
+    private val playerRoles: MutableList<Player.Role> = mutableListOf()
     private var numberOfPlayers: Int = 0
 
     private val roleSmile: Map<Player.Role, String> = hashMapOf(
@@ -45,6 +47,37 @@ class ConfigureGameFragment : Fragment() {
 
     private fun setupViews() {
         binding.layoutPlayerList.removeAllViews()
+        // Добавляем комментарий для обозначения автоматического заполнения списка
+        // TODO: Автоматическое заполнение списка игроков (для тестов)
+
+        val randomNames = listOf(
+            "John",
+            "Emma",
+            "Liam",
+            "Olivia",
+            "Noah",
+            "Ava",
+            "William",
+            "Sophia",
+            "James",
+            "Isabella"
+        )
+        val maxPlayers = 10
+
+        for (i in 0 until maxPlayers) {
+            val playerName = randomNames.random()
+            nameOfPlayers.add(playerName)
+            numberOfPlayers++
+
+            val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
+            playerBinding.tvPlayerName.text = playerName
+            playerBinding.tvPlayerNumber.text = (i + 1).toString()
+            val itemPlayerView = playerBinding.root
+            binding.layoutPlayerList.addView(itemPlayerView)
+
+            val spinner = playerBinding.spinnerOptions
+            setupRoleSpinner(spinner)
+        }
     }
 
     private fun setupListeners() {
@@ -57,10 +90,35 @@ class ConfigureGameFragment : Fragment() {
         }
 
         binding.buttonStart.setOnClickListener {
-            if (nameOfPlayers.size > 0) {
-                Game.getInstance().addPlayers(playerNames = nameOfPlayers, playerRoles = playerRoles)
+            if (isPlayersEnough()) {
+                Game.getInstance()
+                    .addPlayers(playerNames = nameOfPlayers, playerRoles = playerRoles)
                 findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
+            } else {
+                Toast.makeText(context, "Not enough players", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "setupListeners: ${Game.getInstance().getAllPlayers().toString()}")
             }
+        }
+    }
+
+    private fun isPlayersEnough(): Boolean {
+        return when (nameOfPlayers.size) {
+            10 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 2 &&
+                    playerRoles.contains(Player.Role.DON) &&
+                    playerRoles.contains(Player.Role.SHERIFF) &&
+                    playerRoles.count { it == Player.Role.CIVIL } >= 6
+            9 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 2 &&
+                    playerRoles.contains(Player.Role.DON) &&
+                    playerRoles.contains(Player.Role.SHERIFF) &&
+                    playerRoles.count { it == Player.Role.CIVIL } >= 5
+            8 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 1 &&
+                    playerRoles.contains(Player.Role.DON) &&
+                    playerRoles.contains(Player.Role.SHERIFF) &&
+                    playerRoles.count { it == Player.Role.CIVIL } >= 4
+            7 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 1 &&
+                    playerRoles.contains(Player.Role.DON) &&
+                    playerRoles.count { it == Player.Role.CIVIL } >= 3
+            else -> false
         }
     }
 
@@ -82,7 +140,8 @@ class ConfigureGameFragment : Fragment() {
 
                 binding.setPlayerName.text.clear()
             } else {
-                Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -115,7 +174,6 @@ class ConfigureGameFragment : Fragment() {
             ) {
                 val selectedRole = roles[position]
                 playerRoles.add(position, selectedRole)
-                Toast.makeText(context, "Выбрана роль: $selectedRole", Toast.LENGTH_SHORT).show()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -123,6 +181,7 @@ class ConfigureGameFragment : Fragment() {
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
