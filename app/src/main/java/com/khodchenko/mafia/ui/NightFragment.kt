@@ -1,12 +1,16 @@
 package com.khodchenko.mafia.ui
 
 import android.R
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentNightBinding
@@ -64,12 +68,14 @@ class NightFragment : Fragment() {
         val spinnerTarget2 = binding.spinnerTarget2
         val spinnerTarget3 = binding.spinnerTarget3
 
-        // Remove dead black players from the player list
-        val aliveBlackPlayers = blackPlayers.filter { it.isAlive }
 
         // Populate spinners with player names
-        val playerNames = aliveBlackPlayers.map { it.name }
-        val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, playerNames)
+        val players = Game.getInstance().getAllPlayers()
+        val playerList = players.map { player ->
+            "${player.number}: ${player.name}"
+            player
+        }
+        val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, playerList.map { "${it.number}: ${it.name}" })
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         spinnerTarget1.adapter = adapter
         spinnerTarget2.adapter = adapter
@@ -78,24 +84,21 @@ class NightFragment : Fragment() {
         binding.buttonShoot.setOnClickListener {
             val targets: MutableList<Player> = mutableListOf()
 
-            val selectedTarget1 = spinnerTarget1.selectedItem as? Player
-            val selectedTarget2 = spinnerTarget2.selectedItem as? Player
-            val selectedTarget3 = spinnerTarget3.selectedItem as? Player
+            val selectedTarget1 = spinnerTarget1.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }?.let { playerList[it] }
+            val selectedTarget2 = spinnerTarget2.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }?.let { playerList[it] }
+            val selectedTarget3 = spinnerTarget3.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }?.let { playerList[it] }
 
-            if (selectedTarget1 != null) {
-                targets.add(selectedTarget1)
-            }
+            selectedTarget1?.let { targets.add(it) }
+            selectedTarget2?.let { targets.add(it) }
+            selectedTarget3?.let { targets.add(it) }
 
-            if (selectedTarget2 != null) {
-                targets.add(selectedTarget2)
-            }
-
-            if (selectedTarget3 != null) {
-                targets.add(selectedTarget3)
-            }
-
-            if (targets.size >= 1) {
+            if (targets.isNotEmpty()) {
                 Game.getInstance().makeShoot(targets)
+                Toast.makeText(requireContext(), "Выстрел совершен", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "onViewCreated: ${targets.map { it.name }}")
+            } else {
+                Toast.makeText(requireContext(), "Выстрел не совершен", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "onViewCreated: ${targets.map { it.name }}")
             }
         }
     }
