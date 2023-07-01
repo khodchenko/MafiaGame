@@ -75,7 +75,7 @@ class TimerFragment : Fragment() {
     }
 
     private fun updateHeaderText() {
-        binding.tvCurrentPlayer.text = Game.getInstance().getCurrentPlayer().name
+        binding.tvCurrentPlayer.text = "${Game.getInstance().getCurrentPlayer().number}: ${Game.getInstance().getCurrentPlayer().name}"
         binding.tvSpeechHeader.text =
             "${Game.getInstance().getCurrentStage()} № ${Game.getInstance().getCurrentDay()}"
     }

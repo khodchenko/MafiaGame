@@ -54,24 +54,30 @@ class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
                         .show()
                     player.isOnVote = true
                     VoteHelper.getInstance().addCandidate(player)
+                    itemPlayerClicked = !itemPlayerClicked
+                    playerAdapter.notifyDataSetChanged()
+                    playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
                 } else {
                     Snackbar.make(binding.root, "Вы отменили выбор игрока ${player.name}", Snackbar.LENGTH_SHORT)
                         .show()
                     player.isOnVote = false
                     VoteHelper.getInstance().removeCandidate(player)
+                    itemPlayerClicked = !itemPlayerClicked
+                    playerAdapter.notifyDataSetChanged()
+                    playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
                 }
             }
             setNegativeButton("Дать фол") { _, _ ->
                 player.penalty ++
                 Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT)
                     .show()
+                itemPlayerClicked = !itemPlayerClicked
+                playerAdapter.notifyDataSetChanged()
+                playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
             }
         }.create()
         dialog.show()
 
-        itemPlayerClicked = !itemPlayerClicked
-        playerAdapter.notifyDataSetChanged()
-        playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
     }
 
     override fun isPlayerSelected(player: Player): Boolean {
