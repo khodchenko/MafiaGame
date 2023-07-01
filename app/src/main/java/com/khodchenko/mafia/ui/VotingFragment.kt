@@ -1,10 +1,11 @@
 package com.khodchenko.mafia.ui
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.khodchenko.mafia.data.Game
@@ -16,7 +17,7 @@ class VotingFragment : Fragment(), PlayerAdapter.PlayerClickListener {
     private var _binding: FragmentVotingBinding? = null
     private val binding get() = _binding!!
     private lateinit var playerAdapter: PlayerAdapter
-    private lateinit var candidate : Player
+    private lateinit var candidate: Player
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,16 +26,17 @@ class VotingFragment : Fragment(), PlayerAdapter.PlayerClickListener {
         _binding = FragmentVotingBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        binding.tvCandidatName.text = VoteHelper.getInstance().candidates.keys.lastOrNull()?.name ?: "Нет кандидатов"
         setupRecyclerView()
 
         return root
     }
+
     override fun onPlayerClick(player: Player) {
         if (isPlayerSelected(player)) {
             VoteHelper.getInstance().removeVoteForCandidate(player)
             //Toast.makeText(requireContext(), "Убрал голос", Toast.LENGTH_SHORT).show()
             playerAdapter.removeSelectedPlayer(player)
+            Log.d(TAG, "onPlayerClick: " + player.name + " total votes:" + VoteHelper.getInstance().candidates.keys.joinToString { it.name })
         } else {
             VoteHelper.getInstance().addVoteForCandidate(player)
             //Toast.makeText(requireContext(), "Поставил голос", Toast.LENGTH_SHORT).show()
@@ -43,9 +45,11 @@ class VotingFragment : Fragment(), PlayerAdapter.PlayerClickListener {
 
         playerAdapter.notifyDataSetChanged()
     }
+
     private fun updatePlayerList() {
         playerAdapter.updatePlayers(Game.getInstance().getAlivePlayers())
     }
+
     override fun isPlayerSelected(player: Player): Boolean {
         return playerAdapter.isSelected(player)
     }
@@ -60,6 +64,7 @@ class VotingFragment : Fragment(), PlayerAdapter.PlayerClickListener {
 
         updatePlayerList()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

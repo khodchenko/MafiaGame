@@ -75,7 +75,20 @@ class TimerFragment : Fragment() {
     }
 
     private fun updateHeaderText() {
-        binding.tvCurrentPlayer.text = "${Game.getInstance().getCurrentPlayer().number}: ${Game.getInstance().getCurrentPlayer().name}"
+        binding.tvCurrentPlayer.text = when (Game.getInstance().getCurrentStage()) {
+            Game.Stage.DAY -> {
+                val currentPlayer = Game.getInstance().getCurrentPlayer()
+                "${currentPlayer.number}: ${currentPlayer.name}"
+            }
+            Game.Stage.VOTING -> {
+                val candidates = VoteHelper.getInstance().candidates
+                val currentCandidateIndex = VoteHelper.getInstance().currentCandidateIndex
+                val currentCandidate = candidates.keys.toList()[currentCandidateIndex]
+                "${currentCandidate.number}: ${currentCandidate.name}"
+            }
+            else -> ""
+        }
+
         binding.tvSpeechHeader.text =
             "${Game.getInstance().getCurrentStage()} № ${Game.getInstance().getCurrentDay()}"
     }
@@ -157,12 +170,16 @@ class TimerFragment : Fragment() {
         if (voteHelper.voteStage ==  2) {
             val  dialog = AlertDialog.Builder(requireContext()).apply {
                 setTitle("Выгнать всех кандидатов?")
-                setMessage("123")
                 setPositiveButton("Выгнать") { dialog, which ->
                     //todo выгнать всех кандидатов в списке
                     dialog.cancel()
                 }
                 setNegativeButton("Оставить") { dialog, which ->
+                    //todo это тут не должно быть
+                    game.setCurrentStage(Game.Stage.NIGHT)
+                    voteHelper.clearCandidates()
+                    game.nextDay()
+                    game.setSpeechPlayerOrder()
                     dialog.cancel()
                 }
             }

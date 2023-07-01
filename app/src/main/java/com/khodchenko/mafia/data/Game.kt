@@ -1,5 +1,8 @@
 package com.khodchenko.mafia.data
 
+import android.content.ContentValues.TAG
+import android.util.Log
+
 class Game {
 
     private constructor()
@@ -65,7 +68,7 @@ class Game {
                     // Уведомить наблюдателей о смене игрока
                     notifyPlayerChanged(getCurrentPlayer())
                 } else {
-                    if (VoteHelper.getInstance().candidates.isEmpty()){
+                    if (VoteHelper.getInstance().candidates.isEmpty()) {
                         setCurrentStage(Stage.NIGHT)
                         nextDay()
                         setSpeechPlayerOrder()
@@ -78,18 +81,32 @@ class Game {
             Stage.VOTING -> {
                 val voteHelper = VoteHelper.getInstance()
 
-               if (voteHelper.candidates.size == 1) {
+                if (voteHelper.candidates.size == 1) {
                     makeVote(voteHelper.candidates.keys.first()) //put only one to kick list
                     voteHelper.clearCandidates()
                     setCurrentStage(Stage.LAST_WORD)
                     lastWordFrom = Stage.VOTING
 
-                } else if (voteHelper.currentCandidateIndex < voteHelper.candidates.size - 1) {
-                   voteHelper.nextCandidate()
-
+                } else if (voteHelper.currentCandidateIndex < voteHelper.candidates.keys.size - 1) {
+                    Log.d(TAG, "processNextButtonClick: next candidate")
+                    voteHelper.nextCandidate()
+                    setCurrentStage(Stage.VOTING)
                 } else {
+                    Log.d(TAG, "processNextButtonClick: calculate votes")
                     voteHelper.calculateVotes()
-                    voteHelper.currentCandidateIndex = 0
+                    if (voteHelper.candidates.size == 1) {
+                        voteHelper.candidates.keys.first().let {
+                            makeVote(it)
+                            voteHelper.clearCandidates()
+                            setCurrentStage(Stage.LAST_WORD)
+                            lastWordFrom = Stage.VOTING
+                        }
+                    } else {
+                        Log.d(TAG, "processNextButtonClick: equal votes")
+                        Log.d(TAG, "candidates: ${VoteHelper.getInstance().candidates.entries.joinToString { (key, value) -> "$key=$value" }}")
+                        voteHelper.currentCandidateIndex = 0
+                        setCurrentStage(Stage.VOTING)
+                    }
                 }
             }
 
@@ -114,7 +131,17 @@ class Game {
             Stage.WIN -> {
 
             }
+
         }
+        Log.d(TAG, " \n Stage: ${getCurrentStage()}")
+        Log.d(TAG, "All players: ${getAllPlayers().joinToString { it.name }}")
+        Log.d(TAG, "alive: ${getAlivePlayers().joinToString { it.name }}")
+        Log.d(TAG, "dead: ${getDeadPlayers().joinToString { it.name }}")
+        Log.d(
+            TAG,
+            "candidates: ${VoteHelper.getInstance().candidates.keys.joinToString { it.name }}"
+        )
+
     }
 
     fun addObserver(observer: GameObserver) {
@@ -275,7 +302,7 @@ class Game {
         return getAllPlayers().filter { it.isAlive } as MutableList<Player>
     }
 
-    fun getDeadPlayers(playerList: MutableList<Player>): MutableList<Player> {
+    fun getDeadPlayers(): MutableList<Player> {
         return playerList.filter { !it.isAlive } as MutableList<Player>
     }
 

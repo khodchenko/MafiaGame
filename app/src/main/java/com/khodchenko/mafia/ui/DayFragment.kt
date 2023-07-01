@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -45,39 +46,41 @@ class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
         return root
     }
     override fun onPlayerClick(player: Player) {
-        val  dialog = AlertDialog.Builder(requireContext()).apply {
+        val dialogBuilder = AlertDialog.Builder(requireContext()).apply {
             setTitle("Выбор игрока")
             setMessage("Вы хотите выставить игрока ${player.name} на голосование?")
             setPositiveButton("Выставить/Отменить") { _, _ ->
-                if (!itemPlayerClicked) {
-                    Snackbar.make(binding.root, "${Game.getInstance().getCurrentPlayer().name} выставил игрока ${player.name}", Snackbar.LENGTH_SHORT)
-                        .show()
+                val currentPlayer = Game.getInstance().getCurrentPlayer()
+
+                val message = if (!itemPlayerClicked) {
                     player.isOnVote = true
                     VoteHelper.getInstance().addCandidate(player)
-                    itemPlayerClicked = !itemPlayerClicked
-                    playerAdapter.notifyDataSetChanged()
-                    playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
+                    itemPlayerClicked = true
+                    "Игрок ${currentPlayer.name} выставил игрока ${player.name}"
                 } else {
-                    Snackbar.make(binding.root, "Вы отменили выбор игрока ${player.name}", Snackbar.LENGTH_SHORT)
-                        .show()
                     player.isOnVote = false
                     VoteHelper.getInstance().removeCandidate(player)
-                    itemPlayerClicked = !itemPlayerClicked
-                    playerAdapter.notifyDataSetChanged()
-                    playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
+                    itemPlayerClicked = false
+                    "Вы отменили выбор игрока ${player.name}"
                 }
+
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+                playerAdapter.notifyDataSetChanged()
+                playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
+
+                val playersOnVote = VoteHelper.getInstance().candidates.keys.joinToString { it.name }
+                Toast.makeText(requireContext(), "Игроки на голосовании: $playersOnVote", Toast.LENGTH_SHORT).show()
             }
             setNegativeButton("Дать фол") { _, _ ->
-                player.penalty ++
-                Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT)
-                    .show()
-                itemPlayerClicked = !itemPlayerClicked
+                player.penalty++
+                Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT).show()
                 playerAdapter.notifyDataSetChanged()
                 playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
             }
-        }.create()
-        dialog.show()
+        }
 
+        val dialog = dialogBuilder.create()
+        dialog.show()
     }
 
     override fun isPlayerSelected(player: Player): Boolean {

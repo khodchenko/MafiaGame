@@ -27,14 +27,14 @@ class VoteHelper {
     }
 
     fun addVoteForCandidate(voter: Player) {
-        val lastCandidate = candidates.keys.lastOrNull()
+        val lastCandidate = candidates.keys.elementAtOrNull(currentCandidateIndex)
         lastCandidate?.let { candidate ->
-            candidates[candidate]?.add(voter)
+            candidates.computeIfAbsent(candidate) { mutableListOf() }.add(voter)
         }
     }
 
     fun removeVoteForCandidate(voter: Player) {
-        val lastCandidate = candidates.keys.lastOrNull()
+        val lastCandidate = candidates.keys.elementAtOrNull(currentCandidateIndex)
         lastCandidate?.let { candidate ->
             candidates[candidate]?.remove(voter)
         }
@@ -42,20 +42,30 @@ class VoteHelper {
 
     fun nextCandidate() {
         if (currentCandidateIndex != candidates.size - 1) {
-            currentCandidateIndex + 1
+            currentCandidateIndex ++
         }
     }
 
     fun clearCandidates() {
         candidates = mutableMapOf()
         currentCandidateIndex = 0
+        voteStage = 0
     }
 
     fun calculateVotes(): MutableMap<Player, MutableList<Player>> {
-        val maxVotes = candidates.values.map { it.size }.maxOrNull()
-        voteStage ++
-        return candidates.filterValues { it.size == maxVotes }.toMutableMap()
-    }
+        val groupedCandidates = candidates.entries.groupBy({ it.value.size }) { it.key to it.value }
 
+        val maxVotesGroup = groupedCandidates.entries.maxByOrNull { it.key }?.value
+        val filteredCandidates = maxVotesGroup?.associate { it.first to it.second }?.toMutableMap()
+
+        val keysToClear = candidates.keys - filteredCandidates?.keys.orEmpty()
+
+        keysToClear.forEach { key ->
+            candidates[key]?.clear()
+        }
+
+        candidates = filteredCandidates ?: mutableMapOf()
+        return candidates
+    }
 
 }
