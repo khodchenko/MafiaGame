@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.TimerFragment">
 
     <TextView
@@ -111,5 +111,15 @@
         app:layout_constraintEnd_toStartOf="@+id/im_next"
         app:layout_constraintStart_toEndOf="@+id/im_stop"
         app:layout_constraintTop_toBottomOf="@+id/tv_timer" />
+
+    <ImageView
+        android:id="@+id/iv_button_showRoles"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_eye"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

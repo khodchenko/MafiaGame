@@ -1,6 +1,6 @@
 package com.khodchenko.mafia.ui.home
 
-import TimerFragment
+
 import com.khodchenko.mafia.ui.VotingFragment
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.databinding.FragmentHomeBinding
 import com.khodchenko.mafia.ui.DayFragment
 import com.khodchenko.mafia.ui.LastWordFragment
 import com.khodchenko.mafia.ui.NightFragment
+import com.khodchenko.mafia.ui.TimerFragment
 import com.khodchenko.mafia.ui.WinFragment
 
 
@@ -47,6 +47,8 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
         currentFragment = NightFragment()
 
         dayFragment.setOnPlayerChangeListener(this)
+
+
         childFragmentManager.beginTransaction()
             .add(containerTimerFragment.id, timerFragment)
             .add(containerPlayerListFragment.id, currentFragment)

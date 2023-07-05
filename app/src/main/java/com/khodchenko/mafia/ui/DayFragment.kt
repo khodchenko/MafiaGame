@@ -40,11 +40,12 @@ class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
     ): View {
         _binding = FragmentPlayerListBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         setupRecyclerView()
+
 
         return root
     }
+
     override fun onPlayerClick(player: Player) {
         val dialogBuilder = AlertDialog.Builder(requireContext()).apply {
             setTitle("Выбор игрока")

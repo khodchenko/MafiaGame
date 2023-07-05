@@ -1,3 +1,5 @@
+package com.khodchenko.mafia.ui
+
 import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.net.Uri
@@ -19,7 +21,7 @@ private const val TOTAL_TIME = 60000L
 private const val HALF_TIME = 30000L
 private const val INTERVAL = 1000L
 
-class TimerFragment : Fragment() {
+class TimerFragment : Fragment(){
 
     private var _binding: FragmentTimerBinding? = null
     private val binding get() = _binding!!
@@ -41,6 +43,10 @@ class TimerFragment : Fragment() {
 
         binding.imNext.setOnClickListener {
             nextButtonClick()
+        }
+
+        binding.ivButtonShowRoles.setOnClickListener {
+            
         }
 
         with(binding) {
@@ -107,7 +113,7 @@ class TimerFragment : Fragment() {
                 if (secondsRemaining == 10L) {
                     playSound(R.raw.timer_sound_10sec_r)
                 } else if (secondsRemaining == 5L) {
-
+                    // Play sound or perform any other action at 5 seconds remaining
                 }
             }
 
@@ -143,6 +149,7 @@ class TimerFragment : Fragment() {
         val timeText = String.format("%02d:%02d", minutes, seconds)
         binding.tvTimer.text = timeText
     }
+
 
     private fun updateProgressBar() {
         val progress = (TOTAL_TIME - remainingTime).toInt()
@@ -216,7 +223,4 @@ class TimerFragment : Fragment() {
         _binding = null
     }
 
-    companion object {
-
-    }
 }
