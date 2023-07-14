@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.khodchenko.mafia.R
@@ -22,7 +21,7 @@ class ConfigureGameFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val nameOfPlayers: ArrayList<String> = arrayListOf()
-    private val playerRoles: MutableList<Player.Role> = mutableListOf()
+
     private var numberOfPlayers: Int = 0
 
     private val roleSmile: Map<Player.Role, String> = hashMapOf(
@@ -67,7 +66,7 @@ class ConfigureGameFragment : Fragment() {
 
         for (i in 0 until maxPlayers) {
             val playerName = randomNames.random()
-            nameOfPlayers.add(playerName)
+            Game.getInstance().addPlayer(playerName)
             numberOfPlayers++
 
             val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
@@ -91,34 +90,46 @@ class ConfigureGameFragment : Fragment() {
         }
 
         binding.buttonStart.setOnClickListener {
-            if (isPlayersEnough()) {
-                Game.getInstance()
-                    .addPlayers(playerNames = nameOfPlayers, playerRoles = playerRoles)
+           // if (isPlayersEnough()) {
+
+//                Game.getInstance()
+//                    .addPlayers(playerNames = nameOfPlayers)
                 findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
-            } else {
-                Toast.makeText(context, "Not enough players", Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "setupListeners: ${Game.getInstance().getAllPlayers().toString()}")
-            }
+
+                //log:
+                val playersString = StringBuilder()
+                for (player in Game.getInstance().getAllPlayers()) {
+                    val playerInfo = "${player.number} ${player.name}  ${player.role}"
+                    playersString.append(playerInfo).append("\n")
+                }
+
+                Log.d(TAG, "setupListeners: $playersString")
+//            } else {
+//                Toast.makeText(context, "Not enough players", Toast.LENGTH_SHORT).show()
+//                Log.d(TAG, "setupListeners: ${Game.getInstance().getAllPlayers().toString()}")
+//            }
         }
     }
 
     private fun isPlayersEnough(): Boolean {
+
+        val rolesList: MutableList<Player.Role> = Game.getInstance().getAllPlayers().mapTo(mutableListOf()) { it.role as Player.Role }
         return when (nameOfPlayers.size) {
-            10 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 2 &&
-                    playerRoles.contains(Player.Role.DON) &&
-                    playerRoles.contains(Player.Role.SHERIFF) &&
-                    playerRoles.count { it == Player.Role.CIVIL } >= 6
-            9 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 2 &&
-                    playerRoles.contains(Player.Role.DON) &&
-                    playerRoles.contains(Player.Role.SHERIFF) &&
-                    playerRoles.count { it == Player.Role.CIVIL } >= 5
-            8 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 1 &&
-                    playerRoles.contains(Player.Role.DON) &&
-                    playerRoles.contains(Player.Role.SHERIFF) &&
-                    playerRoles.count { it == Player.Role.CIVIL } >= 4
-            7 -> playerRoles.contains(Player.Role.MAFIA) && playerRoles.count { it == Player.Role.MAFIA } >= 1 &&
-                    playerRoles.contains(Player.Role.DON) &&
-                    playerRoles.count { it == Player.Role.CIVIL } >= 3
+            10 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 2 &&
+                    rolesList.contains(Player.Role.DON) &&
+                    rolesList.contains(Player.Role.SHERIFF) &&
+                    rolesList.count { it == Player.Role.CIVIL } >= 6
+            9 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 2 &&
+                    rolesList.contains(Player.Role.DON) &&
+                    rolesList.contains(Player.Role.SHERIFF) &&
+                    rolesList.count { it == Player.Role.CIVIL } >= 5
+            8 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 1 &&
+                    rolesList.contains(Player.Role.DON) &&
+                    rolesList.contains(Player.Role.SHERIFF) &&
+                    rolesList.count { it == Player.Role.CIVIL } >= 4
+            7 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 1 &&
+                    rolesList.contains(Player.Role.DON) &&
+                    rolesList.count { it == Player.Role.CIVIL } >= 3
             else -> false
         }
     }
@@ -127,7 +138,7 @@ class ConfigureGameFragment : Fragment() {
         val playerName = binding.setPlayerName.text.toString().trim()
         if (playerName.isNotEmpty()) {
             if (numberOfPlayers < 10) {
-                nameOfPlayers.add(playerName)
+                Game.getInstance().addPlayer(playerName)
                 numberOfPlayers++
 
                 val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
@@ -150,7 +161,7 @@ class ConfigureGameFragment : Fragment() {
     private fun removePlayer() {
         if (numberOfPlayers > 0) {
             binding.layoutPlayerList.removeViewAt(numberOfPlayers - 1)
-            nameOfPlayers.removeAt(numberOfPlayers - 1)
+            Game.getInstance().removePlayer()
             numberOfPlayers--
         }
     }
@@ -173,8 +184,10 @@ class ConfigureGameFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
+
                 val selectedRole = roles[position]
-                playerRoles.add(position, selectedRole)
+                val playerIndex = binding.layoutPlayerList.indexOfChild(parent?.parent as View)
+                Game.getInstance().getAllPlayers()[playerIndex].role = selectedRole
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

@@ -241,10 +241,13 @@ class Game {
             Stage.WIN
         }
     }
+    fun addPlayer(playerName: String) {
+        playerList.add(Player(playerName, playerList.size + 1))
+    }
 
     fun addPlayers(playerNames: ArrayList<String>, playerRoles: MutableList<Player.Role>) {
-        for (player in playerNames) {
-            playerList.add(Player(player, playerList.size + 1, role = playerRoles[playerList.size]))
+        for (index in playerNames.indices) {
+            playerList.add(Player(playerNames[index], playerList.size + 1, role = playerRoles[index]))
         }
     }
 
@@ -317,4 +320,10 @@ class Game {
     fun nextDay() {
         day++
     }
+
+    fun removePlayer() {
+        playerList.removeAt(playerList.size - 1)
+    }
+
+
 }
