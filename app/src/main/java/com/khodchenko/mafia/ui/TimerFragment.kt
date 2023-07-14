@@ -46,7 +46,7 @@ class TimerFragment : Fragment(){
         }
 
         binding.ivButtonShowRoles.setOnClickListener {
-            
+
         }
 
         with(binding) {
@@ -113,11 +113,12 @@ class TimerFragment : Fragment(){
                 if (secondsRemaining == 10L) {
                     playSound(R.raw.timer_sound_10sec_r)
                 } else if (secondsRemaining == 5L) {
-                    // Play sound or perform any other action at 5 seconds remaining
+                    playSound(R.raw.timer_sound_10sec_r)
                 }
             }
 
             override fun onFinish() {
+                playSound(R.raw.timer_sound_0sec)
                 onTimerFinished()
                 stopTimer()
                 togglePlayPauseButtons()
@@ -200,11 +201,9 @@ class TimerFragment : Fragment(){
         togglePlayPauseButtons()
     }
 
-
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timer_sound_10sec_r)
     }
-
     private fun playSound(soundResId: Int) {
         mediaPlayer?.apply {
             stop()

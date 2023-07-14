@@ -10,6 +10,7 @@ import com.khodchenko.mafia.databinding.FragmentWinBinding
 
 
 class WinFragment : Fragment() {
+    private var winner: String? = null
 
     private var _binding: FragmentWinBinding? = null
     private val binding get() = _binding!!
@@ -19,6 +20,10 @@ class WinFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentWinBinding.inflate(inflater, container, false)
+
+        arguments?.let {
+            winner = it.getString("parameter_key")
+        }
 
         return _binding?.root ?: inflater.inflate(R.layout.fragment_win, container, false)
     }
