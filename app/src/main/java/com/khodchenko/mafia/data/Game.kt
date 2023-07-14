@@ -65,7 +65,6 @@ class Game {
                 if (currentPlayer != lastPlayerOfQueueList) {
                     setCurrentPlayer(nextPlayerSpeech())
 
-                    // Уведомить наблюдателей о смене игрока
                     notifyPlayerChanged(getCurrentPlayer())
                 } else {
                     if (VoteHelper.getInstance().candidates.isEmpty()) {
@@ -85,6 +84,7 @@ class Game {
                     makeVote(voteHelper.candidates.keys.first()) //put only one to kick list
                     voteHelper.clearCandidates()
                     setCurrentStage(Stage.LAST_WORD)
+
                     lastWordFrom = Stage.VOTING
 
                 } else if (voteHelper.currentCandidateIndex < voteHelper.candidates.keys.size - 1) {
@@ -107,6 +107,7 @@ class Game {
                         voteHelper.currentCandidateIndex = 0
                         setCurrentStage(Stage.VOTING)
                     }
+
                 }
             }
 
@@ -126,10 +127,11 @@ class Game {
                     setSpeechPlayerOrder()
                     checkGameEnd()
                 }
+
             }
 
             Stage.WIN -> {
-
+                setCurrentStage(Stage.WIN)
             }
 
         }
@@ -141,7 +143,7 @@ class Game {
             TAG,
             "candidates: ${VoteHelper.getInstance().candidates.keys.joinToString { it.name }}"
         )
-
+        checkGameEnd()
     }
 
     fun addObserver(observer: GameObserver) {
@@ -233,12 +235,10 @@ class Game {
         val blackPlayers = getAllBlackPlayers()
 
         if (blackPlayers.size == redPlayers.size) {
-            inGame = false
-            Stage.WIN
+            currentStage = Stage.WIN
         }
         if (blackPlayers.size == 0) {
-            inGame = false
-            Stage.WIN
+            currentStage = Stage.WIN
         }
     }
     fun addPlayer(playerName: String) {
@@ -267,10 +267,6 @@ class Game {
             }
         }
         return shuffledPlayers
-    }
-
-    private fun clearPlayers() {
-        playerList = mutableListOf()
     }
 
     fun getAllPlayers(): MutableList<Player> {
