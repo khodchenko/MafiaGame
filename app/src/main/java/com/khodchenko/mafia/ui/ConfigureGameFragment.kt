@@ -22,7 +22,7 @@ class ConfigureGameFragment : Fragment() {
 
     private val nameOfPlayers: ArrayList<String> = arrayListOf()
 
-    private var numberOfPlayers: Int = 0
+    private var numberOfPlayers: Int = Game.getInstance().getAllPlayers().size
 
     private val roleSmile: Map<Player.Role, String> = hashMapOf(
         Player.Role.CIVIL to "\uD83D\uDE42",
@@ -67,7 +67,7 @@ class ConfigureGameFragment : Fragment() {
         for (i in 0 until maxPlayers) {
             val playerName = randomNames.random()
             Game.getInstance().addPlayer(playerName)
-            numberOfPlayers++
+
 
             val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
             playerBinding.tvPlayerName.text = playerName
@@ -81,6 +81,7 @@ class ConfigureGameFragment : Fragment() {
     }
 
     private fun setupListeners() {
+
         binding.btnAddPlayer.setOnClickListener {
             addPlayer()
         }
@@ -90,20 +91,20 @@ class ConfigureGameFragment : Fragment() {
         }
 
         binding.buttonStart.setOnClickListener {
-           // if (isPlayersEnough()) {
+            // if (isPlayersEnough()) {
 
 //                Game.getInstance()
 //                    .addPlayers(playerNames = nameOfPlayers)
-                findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
+            findNavController().navigate(R.id.action_configureGameFragment_to_nav_home)
 
-                //log:
-                val playersString = StringBuilder()
-                for (player in Game.getInstance().getAllPlayers()) {
-                    val playerInfo = "${player.number} ${player.name}  ${player.role}"
-                    playersString.append(playerInfo).append("\n")
-                }
+            //log:
+            val playersString = StringBuilder()
+            for (player in Game.getInstance().getAllPlayers()) {
+                val playerInfo = "${player.number} ${player.name}  ${player.role}"
+                playersString.append(playerInfo).append("\n")
+            }
 
-                Log.d(TAG, "setupListeners: $playersString")
+            Log.d(TAG, "setupListeners: $playersString")
 //            } else {
 //                Toast.makeText(context, "Not enough players", Toast.LENGTH_SHORT).show()
 //                Log.d(TAG, "setupListeners: ${Game.getInstance().getAllPlayers().toString()}")
@@ -113,48 +114,53 @@ class ConfigureGameFragment : Fragment() {
 
     private fun isPlayersEnough(): Boolean {
 
-        val rolesList: MutableList<Player.Role> = Game.getInstance().getAllPlayers().mapTo(mutableListOf()) { it.role as Player.Role }
+        val rolesList: MutableList<Player.Role> =
+            Game.getInstance().getAllPlayers().mapTo(mutableListOf()) { it.role as Player.Role }
         return when (nameOfPlayers.size) {
             10 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 2 &&
                     rolesList.contains(Player.Role.DON) &&
                     rolesList.contains(Player.Role.SHERIFF) &&
                     rolesList.count { it == Player.Role.CIVIL } >= 6
+
             9 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 2 &&
                     rolesList.contains(Player.Role.DON) &&
                     rolesList.contains(Player.Role.SHERIFF) &&
                     rolesList.count { it == Player.Role.CIVIL } >= 5
+
             8 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 1 &&
                     rolesList.contains(Player.Role.DON) &&
                     rolesList.contains(Player.Role.SHERIFF) &&
                     rolesList.count { it == Player.Role.CIVIL } >= 4
+
             7 -> rolesList.contains(Player.Role.MAFIA) && rolesList.count { it == Player.Role.MAFIA } >= 1 &&
                     rolesList.contains(Player.Role.DON) &&
                     rolesList.count { it == Player.Role.CIVIL } >= 3
+
             else -> false
         }
     }
 
     private fun addPlayer() {
         val playerName = binding.setPlayerName.text.toString().trim()
-        if (playerName.isNotEmpty()) {
-            if (numberOfPlayers < 10) {
-                Game.getInstance().addPlayer(playerName)
-                numberOfPlayers++
+        if (playerName.isNotEmpty() && numberOfPlayers < 10) {
 
-                val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
-                playerBinding.tvPlayerName.text = playerName
-                playerBinding.tvPlayerNumber.text = numberOfPlayers.toString()
-                val itemPlayerView = playerBinding.root
-                binding.layoutPlayerList.addView(itemPlayerView)
+            //todo
+            Game.getInstance().addPlayer(playerName)
 
-                val spinner = playerBinding.spinnerOptions
-                setupRoleSpinner(spinner)
+            val playerBinding = ItemPlayerBinding.inflate(layoutInflater)
+            playerBinding.tvPlayerName.text = playerName
+            playerBinding.tvPlayerNumber.text = numberOfPlayers.toString()
+            val itemPlayerView = playerBinding.root
+            binding.layoutPlayerList.addView(itemPlayerView)
 
-                binding.setPlayerName.text.clear()
-            } else {
-                Toast.makeText(context, "Maximum number of players reached", Toast.LENGTH_SHORT)
-                    .show()
-            }
+            val spinner = playerBinding.spinnerOptions
+            setupRoleSpinner(spinner)
+
+            binding.setPlayerName.text.clear()
+
+        } else {
+            Toast.makeText(context, "Maximum number of players reached or empty name", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -162,7 +168,6 @@ class ConfigureGameFragment : Fragment() {
         if (numberOfPlayers > 0) {
             binding.layoutPlayerList.removeViewAt(numberOfPlayers - 1)
             Game.getInstance().removePlayer()
-            numberOfPlayers--
         }
     }
 
@@ -191,7 +196,7 @@ class ConfigureGameFragment : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Ничего не делаем
+
             }
         }
     }

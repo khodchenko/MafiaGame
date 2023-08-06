@@ -15,7 +15,7 @@ import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentPlayerListBinding
 
-class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
+class DayFragment : Fragment(), PlayerAdapter.PlayerClickListener {
 
     interface OnPlayerChangeListener {
         fun onPlayerChanged(player: Player)
@@ -69,12 +69,18 @@ class DayFragment : Fragment() , PlayerAdapter.PlayerClickListener{
                 playerAdapter.notifyDataSetChanged()
                 playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
 
-                val playersOnVote = VoteHelper.getInstance().candidates.keys.joinToString { it.name }
-                Toast.makeText(requireContext(), "Игроки на голосовании: $playersOnVote", Toast.LENGTH_SHORT).show()
+                val playersOnVote =
+                    VoteHelper.getInstance().candidates.keys.joinToString { it.name }
+                Toast.makeText(
+                    requireContext(),
+                    "Игроки на голосовании: $playersOnVote",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             setNegativeButton("Дать фол") { _, _ ->
                 player.penalty++
-                Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT)
+                    .show()
                 playerAdapter.notifyDataSetChanged()
                 playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
             }

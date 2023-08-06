@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
@@ -33,7 +34,7 @@ class NightFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val blackPlayers = Game.getInstance().getAllBlackPlayers()
+        val blackPlayers = Game.getInstance().getAllAliveBlackPlayers()
 
         if (blackPlayers.isNotEmpty()) {
             val tvPlayerRole1 = binding.tvPlayerRole1
@@ -63,11 +64,15 @@ class NightFragment : Fragment() {
                 binding.spinnerTarget3.isEnabled = false
             }
         }
+        var spinnners = mutableListOf<Spinner>(
+            binding.spinnerTarget1,
+            binding.spinnerTarget2,
+            binding.spinnerTarget3
+        )
 
         val spinnerTarget1 = binding.spinnerTarget1
         val spinnerTarget2 = binding.spinnerTarget2
         val spinnerTarget3 = binding.spinnerTarget3
-
 
         // Populate spinners with player names
         val players = Game.getInstance().getAllPlayers()
@@ -75,25 +80,28 @@ class NightFragment : Fragment() {
             "${player.number}: ${player.name}"
             player
         }
-        val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, playerList.map { "${it.number}: ${it.name}" })
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.simple_spinner_item,
+            playerList.map { "${it.number}: ${it.name}" })
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         spinnerTarget1.adapter = adapter
         spinnerTarget2.adapter = adapter
         spinnerTarget3.adapter = adapter
 
         binding.buttonShoot.setOnClickListener {
-            val targets: MutableList<Player> = mutableListOf()
+            var targets: MutableList<Player> = mutableListOf()
 
-            val selectedTarget1 = spinnerTarget1.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }?.let { playerList[it] }
-            val selectedTarget2 = spinnerTarget2.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }?.let { playerList[it] }
-            val selectedTarget3 = spinnerTarget3.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }?.let { playerList[it] }
-
-            selectedTarget1?.let { targets.add(it) }
-            selectedTarget2?.let { targets.add(it) }
-            selectedTarget3?.let { targets.add(it) }
+            for (spinner in spinnners) {
+                if (spinner.visibility == View.VISIBLE) {
+                    targets.add(spinner.selectedItemPosition.takeIf { it != AdapterView.INVALID_POSITION }
+                        ?.let { playerList[it] }!!)
+                }
+            }
 
             if (targets.isNotEmpty()) {
                 Game.getInstance().makeShoot(targets)
+                targets = mutableListOf()
                 Toast.makeText(requireContext(), "Выстрел совершен", Toast.LENGTH_SHORT).show()
                 Log.d(TAG, "onViewCreated: ${targets.map { it.name }}")
             } else {

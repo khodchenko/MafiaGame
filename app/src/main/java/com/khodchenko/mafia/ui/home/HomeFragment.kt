@@ -48,7 +48,6 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
 
         dayFragment.setOnPlayerChangeListener(this)
 
-
         childFragmentManager.beginTransaction()
             .add(containerTimerFragment.id, timerFragment)
             .add(containerPlayerListFragment.id, currentFragment)

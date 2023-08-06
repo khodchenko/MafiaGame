@@ -231,24 +231,20 @@ class Game {
     }
 
     fun checkGameEnd() {
-        val redPlayers = getAllRedPlayers()
-        val blackPlayers = getAllBlackPlayers()
+        val redPlayers = getAllAliveRedPlayers()
+        val blackPlayers = getAllAliveBlackPlayers()
 
         if (blackPlayers.size == redPlayers.size) {
             currentStage = Stage.WIN
+            //todo
         }
         if (blackPlayers.size == 0) {
             currentStage = Stage.WIN
+            //todo
         }
     }
     fun addPlayer(playerName: String) {
         playerList.add(Player(playerName, playerList.size + 1))
-    }
-
-    fun addPlayers(playerNames: ArrayList<String>, playerRoles: MutableList<Player.Role>) {
-        for (index in playerNames.indices) {
-            playerList.add(Player(playerNames[index], playerList.size + 1, role = playerRoles[index]))
-        }
     }
 
     private fun shufflePlayerRoles(
@@ -277,24 +273,16 @@ class Game {
         return currentPlayer
     }
 
-    fun getAllRedPlayers(): MutableList<Player> {
+    fun getAllAliveRedPlayers(): MutableList<Player> {
         return getAlivePlayers().filter {
             it.role in listOf(Player.Role.CIVIL, Player.Role.SHERIFF)
         }.toMutableList()
     }
 
-    fun getAllBlackPlayers(): MutableList<Player> {
+    fun getAllAliveBlackPlayers(): MutableList<Player> {
         return getAlivePlayers().filter {
             it.role in listOf(Player.Role.MAFIA, Player.Role.DON)
         }.toMutableList()
-    }
-
-    private fun getDonOrNull(): Player? {
-        return playerList.find { it.role == Player.Role.DON && it.isAlive }
-    }
-
-    private fun getSheriffOrNull(): Player? {
-        return playerList.find { it.role == Player.Role.SHERIFF && it.isAlive }
     }
 
     fun getAlivePlayers(): MutableList<Player> {
