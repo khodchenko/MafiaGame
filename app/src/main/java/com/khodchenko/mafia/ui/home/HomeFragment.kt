@@ -29,7 +29,6 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
     private lateinit var currentFragment: Fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -103,8 +102,10 @@ class HomeFragment : Fragment(),  DayFragment.OnPlayerChangeListener, Game.GameO
 
     private fun showWinFragment() {
         childFragmentManager.beginTransaction()
-            .replace(containerPlayerListFragment.id, WinFragment())
+            .replace(containerTimerFragment.id, WinFragment())
+            .replace(containerPlayerListFragment.id, Fragment())
             .commit()
+
     }
 
     override fun onDestroyView() {

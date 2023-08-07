@@ -13,7 +13,7 @@ class PlayerAdapter(
     private var players: MutableList<Player>,
     private val playerClickListener: PlayerClickListener
 ) : RecyclerView.Adapter<PlayerAdapter.ViewHolder>() {
-
+    private var isScoresVisible: Boolean = false
     private var isRoleVisible: Boolean = true
     private val selectedPlayers: MutableSet<Player> = mutableSetOf()
     private val roleSmile: Map<Player.Role, String> = hashMapOf(
@@ -45,17 +45,34 @@ class PlayerAdapter(
             } else {
                 binding.root.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
             }
+            //role
             if (isRoleVisible) {
                 binding.tvRole.visibility = View.VISIBLE
             } else {
                 binding.tvRole.visibility = View.INVISIBLE
             }
+            //score
+            if (isScoresVisible) {
+                binding.tvScores.visibility = View.VISIBLE
+            } else {
+                binding.tvScores.visibility = View.INVISIBLE
+            }
+
+            binding.tvScores.text = player.score.toString()
+
+
             itemView.setOnClickListener {
                 playerClickListener.onPlayerClick(player)
             }
         }
 
     }
+
+    fun toggleScoresVisibility() {
+        isScoresVisible = !isScoresVisible
+        notifyDataSetChanged()
+    }
+
     fun updatePlayers(players: MutableList<Player>) {
         this.players = players
         notifyDataSetChanged()

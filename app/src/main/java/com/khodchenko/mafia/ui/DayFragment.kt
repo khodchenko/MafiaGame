@@ -42,7 +42,6 @@ class DayFragment : Fragment(), PlayerAdapter.PlayerClickListener {
         val root: View = binding.root
         setupRecyclerView()
 
-
         return root
     }
 

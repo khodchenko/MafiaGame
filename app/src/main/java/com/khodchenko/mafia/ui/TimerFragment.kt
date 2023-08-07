@@ -193,7 +193,7 @@ class TimerFragment : Fragment(){
             }
             dialog.show()
         } else {
-            game.processNextButtonClick()
+                game.processNextButtonClick()
         }
 
         updateHeaderText()
