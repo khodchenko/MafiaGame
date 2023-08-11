@@ -15,17 +15,18 @@ import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentTimerBinding
+import com.khodchenko.mafia.ui.dialog.InputDialogFragment
 import com.khodchenko.mafia.ui.home.HomeFragment
 
 private const val TOTAL_TIME = 60000L
 private const val HALF_TIME = 30000L
 private const val INTERVAL = 1000L
 
-class TimerFragment : Fragment(){
+class TimerFragment : Fragment() {
 
     private var _binding: FragmentTimerBinding? = null
     private val binding get() = _binding!!
-
+    private var isInputDialogShown = false
     private lateinit var countDownTimer: CountDownTimer
     private var isTimerRunning = false
     private var remainingTime: Long = 0
@@ -86,12 +87,14 @@ class TimerFragment : Fragment(){
                 val currentPlayer = Game.getInstance().getCurrentPlayer()
                 "${currentPlayer.number}: ${currentPlayer.name}"
             }
+
             Game.Stage.VOTING -> {
                 val candidates = VoteHelper.getInstance().candidates
                 val currentCandidateIndex = VoteHelper.getInstance().currentCandidateIndex
                 val currentCandidate = candidates.keys.toList()[currentCandidateIndex]
                 "${currentCandidate.number}: ${currentCandidate.name}"
             }
+
             else -> ""
         }
 
@@ -175,8 +178,8 @@ class TimerFragment : Fragment(){
         val game = Game.getInstance()
         val voteHelper = VoteHelper.getInstance()
 
-        if (voteHelper.voteStage ==  2) {
-            val  dialog = AlertDialog.Builder(requireContext()).apply {
+        if (voteHelper.voteStage == 2) {
+            val dialog = AlertDialog.Builder(requireContext()).apply {
                 setTitle("Выгнать всех кандидатов?")
                 setPositiveButton("Выгнать") { dialog, which ->
                     //todo выгнать всех кандидатов в списке
@@ -192,8 +195,15 @@ class TimerFragment : Fragment(){
                 }
             }
             dialog.show()
+            //BEST MOVE
+        } else if (game.getCurrentDay() == 1 && game.getAlivePlayers().size == 9 && !isInputDialogShown) {
+            val currentPlayerNumber = game.getAllPlayers().find { !it.isAlive }?.number
+            val inputDialogFragment =
+                currentPlayerNumber?.let { InputDialogFragment.newInstance(it) }
+            inputDialogFragment?.show(parentFragmentManager, "input_dialog_fragment")
+            isInputDialogShown = true
         } else {
-                game.processNextButtonClick()
+            game.processNextButtonClick()
         }
 
         updateHeaderText()
@@ -204,6 +214,7 @@ class TimerFragment : Fragment(){
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.timer_sound_10sec_r)
     }
+
     private fun playSound(soundResId: Int) {
         mediaPlayer?.apply {
             stop()

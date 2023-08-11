@@ -1,6 +1,7 @@
 package com.khodchenko.mafia.data
 
 class Scores {
+
     val WIN_SCORE : Double = 1.0
     val DISQUALIFICATION : Double = -0.5
     val BEST_MOVE_1_OF_3 : Double = 0.1

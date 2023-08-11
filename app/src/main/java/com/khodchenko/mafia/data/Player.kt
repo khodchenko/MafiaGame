@@ -1,10 +1,12 @@
 package com.khodchenko.mafia.data
 
+import android.os.Parcelable
+
 class Player(
     var name: String,
     var number: Int,
     var role: Enum<Role> = Role.CIVIL,
-    var score: Float = 0.0F,
+    var score: Double = 0.0,
     var penalty: Int = 0,
     var isAlive: Boolean = true,
     var isOnVote: Boolean = false

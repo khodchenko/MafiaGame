@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
+import com.khodchenko.mafia.data.Scores
 import com.khodchenko.mafia.data.VoteHelper
 import com.khodchenko.mafia.databinding.FragmentPlayerListBinding
 
@@ -21,6 +22,7 @@ class DayFragment : Fragment(), PlayerAdapter.PlayerClickListener {
         fun onPlayerChanged(player: Player)
     }
 
+    private val scores = Scores()
     private var playerChangeListener: OnPlayerChangeListener? = null
     private var _binding: FragmentPlayerListBinding? = null
     private val binding get() = _binding!!
@@ -78,10 +80,15 @@ class DayFragment : Fragment(), PlayerAdapter.PlayerClickListener {
             }
             setNegativeButton("Дать фол") { _, _ ->
                 player.penalty++
+                if (player.penalty == 4){
+                    player.isAlive = false
+                    player.score =+ scores.DISQUALIFICATION
+                   Toast.makeText(requireContext(), "Игрок ${player.name} выбыл", Toast.LENGTH_SHORT).show()
+                }
                 Snackbar.make(binding.root, "Дал фол игроку ${player.name}", Snackbar.LENGTH_SHORT)
                     .show()
                 playerAdapter.notifyDataSetChanged()
-                playerAdapter.updatePlayers(Game.getInstance().getAllPlayers())
+                playerAdapter.updatePlayers(Game.getInstance().getAlivePlayers())
             }
         }
 

@@ -77,10 +77,6 @@ class PlayerAdapter(
         this.players = players
         notifyDataSetChanged()
     }
-    fun toggleRoleVisibility() {
-        isRoleVisible = !isRoleVisible
-        notifyDataSetChanged()
-    }
 
     fun addSelectedPlayer(player: Player) {
         selectedPlayers.add(player)
