@@ -95,11 +95,12 @@
             android:id="@+id/tv_scores"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="0"
             android:textColor="#FF9800"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/spinnerOptions"
+            app:layout_constraintEnd_toStartOf="@+id/tvIsVoted"
             app:layout_constraintTop_toTopOf="parent" />
 
 

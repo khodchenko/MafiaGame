@@ -24,6 +24,7 @@ class Game {
         }
     }
 
+    private val scores = Scores()
     private var inGame: Boolean = true
     private var playerList: MutableList<Player> = mutableListOf()
     private var day: Int = 0
@@ -103,7 +104,10 @@ class Game {
                         }
                     } else {
                         Log.d(TAG, "processNextButtonClick: equal votes")
-                        Log.d(TAG, "candidates: ${VoteHelper.getInstance().candidates.entries.joinToString { (key, value) -> "$key=$value" }}")
+                        Log.d(
+                            TAG,
+                            "candidates: ${VoteHelper.getInstance().candidates.entries.joinToString { (key, value) -> "$key=$value" }}"
+                        )
                         voteHelper.currentCandidateIndex = 0
                         setCurrentStage(Stage.VOTING)
                     }
@@ -243,6 +247,7 @@ class Game {
             //todo
         }
     }
+
     fun addPlayer(playerName: String) {
         playerList.add(Player(playerName, playerList.size + 1))
     }
