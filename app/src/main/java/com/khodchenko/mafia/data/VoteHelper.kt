@@ -54,10 +54,8 @@ class VoteHelper {
 
     fun calculateVotes(): MutableMap<Player, MutableList<Player>> {
         val groupedCandidates = candidates.entries.groupBy({ it.value.size }) { it.key to it.value }
-
         val maxVotesGroup = groupedCandidates.entries.maxByOrNull { it.key }?.value
         val filteredCandidates = maxVotesGroup?.associate { it.first to it.second }?.toMutableMap()
-
         val keysToClear = candidates.keys - filteredCandidates?.keys.orEmpty()
 
         keysToClear.forEach { key ->

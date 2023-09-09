@@ -3,14 +3,13 @@ package com.khodchenko.mafia.ui.dialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.ArrayAdapter
-import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
-import com.khodchenko.mafia.R
 import com.khodchenko.mafia.data.Game
 import com.khodchenko.mafia.data.Player
 import com.khodchenko.mafia.data.Scores
+import com.khodchenko.mafia.databinding.DialogInputBinding
 
 class InputDialogFragment : DialogFragment() {
     companion object {
@@ -24,32 +23,20 @@ class InputDialogFragment : DialogFragment() {
             return fragment
         }
     }
-    private lateinit var killedPlayer:Player
+
+    private lateinit var binding: DialogInputBinding
+    private lateinit var killedPlayer: Player
     private val scores: Scores = Scores()
-    private lateinit var spinnerDigit1: Spinner
-    private lateinit var spinnerDigit2: Spinner
-    private lateinit var spinnerDigit3: Spinner
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogView = createDialogView()
+        binding = DialogInputBinding.inflate(LayoutInflater.from(requireContext()))
 
         val number = arguments?.getInt(ARG_NUMBER, 0)
-
-        // Инициализация спиннеров перед использованием setupSpinners
-        spinnerDigit1 = dialogView.findViewById(R.id.spinnerDigit1)
-        spinnerDigit2 = dialogView.findViewById(R.id.spinnerDigit2)
-        spinnerDigit3 = dialogView.findViewById(R.id.spinnerDigit3)
-
         killedPlayer = Game.getInstance().getAllPlayers().find { it.number == number }!!
 
         setupSpinners()
 
-        return buildAlertDialog(dialogView, number)
-    }
-
-    private fun createDialogView(): View {
-        val inflater = requireActivity().layoutInflater
-        return inflater.inflate(R.layout.dialog_input, null)
+        return buildAlertDialog(number)
     }
 
     private fun setupSpinners() {
@@ -60,23 +47,19 @@ class InputDialogFragment : DialogFragment() {
         )
         digitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        spinnerDigit1.adapter = digitAdapter
-        spinnerDigit2.adapter = digitAdapter
-        spinnerDigit3.adapter = digitAdapter
+        binding.spinnerDigit1.adapter = digitAdapter
+        binding.spinnerDigit2.adapter = digitAdapter
+        binding.spinnerDigit3.adapter = digitAdapter
     }
 
-    private fun buildAlertDialog(dialogView: View, number: Int?): AlertDialog {
-        spinnerDigit1 = dialogView.findViewById(R.id.spinnerDigit1)
-        spinnerDigit2 = dialogView.findViewById(R.id.spinnerDigit2)
-        spinnerDigit3 = dialogView.findViewById(R.id.spinnerDigit3)
-
+    private fun buildAlertDialog(number: Int?): AlertDialog {
         return AlertDialog.Builder(requireContext())
             .setTitle("Лучший ход ${killedPlayer.name}")
-            .setView(dialogView)
+            .setView(binding.root)
             .setPositiveButton("Ок") { dialog, _ ->
-                val digit1 = spinnerDigit1.selectedItem.toString()
-                val digit2 = spinnerDigit2.selectedItem.toString()
-                val digit3 = spinnerDigit3.selectedItem.toString()
+                val digit1 = binding.spinnerDigit1.selectedItem.toString()
+                val digit2 = binding.spinnerDigit2.selectedItem.toString()
+                val digit3 = binding.spinnerDigit3.selectedItem.toString()
 
                 val selectedNumbers = listOf(digit1, digit2, digit3)
                 val mafiaAndDonCount = getMafiaAndDonCount(selectedNumbers)

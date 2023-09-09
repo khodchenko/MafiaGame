@@ -114,9 +114,11 @@ class TimerFragment : Fragment() {
 
                 val secondsRemaining = millisUntilFinished / 1000
                 if (secondsRemaining == 10L) {
-                    playSound(R.raw.timer_sound_10sec_r)
+                    //todo play sound
+                    //playSound(R.raw.timer_sound_10sec_r)
                 } else if (secondsRemaining == 5L) {
-                    playSound(R.raw.timer_sound_10sec_r)
+                    //todo play sound
+                    //playSound(R.raw.timer_sound_10sec_r)
                 }
             }
 
@@ -205,7 +207,6 @@ class TimerFragment : Fragment() {
         } else {
             game.processNextButtonClick()
         }
-
         updateHeaderText()
         updateTimerText()
         togglePlayPauseButtons()
